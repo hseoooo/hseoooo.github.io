@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>My First Post | My New Hugo Project</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="description" content="Python 심화 문법 요약
+
+실무에서 자주 쓰는 6가지 심화 문법 패턴 개념 정리
+
+
+1. f-string 포맷팅
+Python 3.6&#43;에서 사용 가능한 문자열 포맷팅 방법. 문자열 앞에 f를 붙이고, {중괄호} 안에 변수나 표현식을 직접 삽입한다.
+name = &#34;Alice&#34;
+score = 85
+
+# 기본 변수 삽입
+print(f&#34;이름: {name}&#34;)
+
+# 표현식 직접 사용
+print(f&#34;합격 여부: {&#39;합격&#39; if score &gt;= 60 else &#39;불합격&#39;}&#34;)
+숫자 포맷 지정자
+
+	
+			
+					형식
+					의미
+					예시
+			
+	
+	
+			
+					:.2f
+					소수점 n자리
+					f&quot;{3.14159:.2f}&quot; → 3.14
+			
+			
+					:,
+					천 단위 쉼표
+					f&quot;{1000000:,}&quot; → 1,000,000
+			
+			
+					:.1%
+					소수 → 퍼센트 (×100 후 % 붙임)
+					f&quot;{0.123:.1%}&quot; → 12.3%
+			
+			
+					:.0f
+					소수점 없이 반올림
+					f&quot;{6500/10000:.0f}만원&quot; → 1만원
+			
+	
+
+정렬 및 칸 채우기
+# :&lt;8  → 왼쪽 정렬, 8칸
+# :&gt;4  → 오른쪽 정렬, 4칸
+print(f&#34;{&#39;팀명&#39;:&lt;8} {&#39;인원&#39;:&gt;4}&#34;)
+print(f&#34;{&#39;개발팀&#39;:&lt;8} {3:&gt;4}&#34;)
+
+2. List Comprehension
+for 반복문으로 리스트를 만드는 과정을 한 줄로 압축하는 문법.">
+    <meta name="generator" content="Hugo 0.162.0">
+    
+    
+    
+      <meta name="robots" content="noindex, nofollow">
+    
+    
+
+    <link rel="stylesheet" href="/ananke/css/main.css">
+    
+
+
+    
+      
+
+    
+
+    
+
+    
+      <link rel="canonical" href="http://localhost:1313/posts/0604_python_advanced_summary/">
+    
+
+    
+    
+    <meta property="og:url" content="http://localhost:1313/posts/0604_python_advanced_summary/">
+	<meta property="og:site_name" content="My New Hugo Project">
+	<meta property="og:title" content="My First Post">
+	<meta property="og:description" content="Python 심화 문법 요약 실무에서 자주 쓰는 6가지 심화 문법 패턴 개념 정리
+1. f-string 포맷팅 Python 3.6&#43;에서 사용 가능한 문자열 포맷팅 방법. 문자열 앞에 f를 붙이고, {중괄호} 안에 변수나 표현식을 직접 삽입한다.
+name = &#34;Alice&#34; score = 85 # 기본 변수 삽입 print(f&#34;이름: {name}&#34;) # 표현식 직접 사용 print(f&#34;합격 여부: {&#39;합격&#39; if score &gt;= 60 else &#39;불합격&#39;}&#34;) 숫자 포맷 지정자 형식 의미 예시 :.2f 소수점 n자리 f&#34;{3.14159:.2f}&#34; → 3.14 :, 천 단위 쉼표 f&#34;{1000000:,}&#34; → 1,000,000 :.1% 소수 → 퍼센트 (×100 후 % 붙임) f&#34;{0.123:.1%}&#34; → 12.3% :.0f 소수점 없이 반올림 f&#34;{6500/10000:.0f}만원&#34; → 1만원 정렬 및 칸 채우기 # :&lt;8 → 왼쪽 정렬, 8칸 # :&gt;4 → 오른쪽 정렬, 4칸 print(f&#34;{&#39;팀명&#39;:&lt;8} {&#39;인원&#39;:&gt;4}&#34;) print(f&#34;{&#39;개발팀&#39;:&lt;8} {3:&gt;4}&#34;) 2. List Comprehension for 반복문으로 리스트를 만드는 과정을 한 줄로 압축하는 문법.">
+	<meta property="og:locale" content="en_us">
+	<meta property="og:type" content="article">
+		<meta property="article:section" content="posts">
+		<meta property="article:published_time" content="2026-06-04T00:00:00+09:00">
+		<meta property="article:modified_time" content="2026-06-04T00:00:00+09:00">
+
+	<meta itemprop="name" content="My First Post">
+	<meta itemprop="description" content="Python 심화 문법 요약 실무에서 자주 쓰는 6가지 심화 문법 패턴 개념 정리
+1. f-string 포맷팅 Python 3.6&#43;에서 사용 가능한 문자열 포맷팅 방법. 문자열 앞에 f를 붙이고, {중괄호} 안에 변수나 표현식을 직접 삽입한다.
+name = &#34;Alice&#34; score = 85 # 기본 변수 삽입 print(f&#34;이름: {name}&#34;) # 표현식 직접 사용 print(f&#34;합격 여부: {&#39;합격&#39; if score &gt;= 60 else &#39;불합격&#39;}&#34;) 숫자 포맷 지정자 형식 의미 예시 :.2f 소수점 n자리 f&#34;{3.14159:.2f}&#34; → 3.14 :, 천 단위 쉼표 f&#34;{1000000:,}&#34; → 1,000,000 :.1% 소수 → 퍼센트 (×100 후 % 붙임) f&#34;{0.123:.1%}&#34; → 12.3% :.0f 소수점 없이 반올림 f&#34;{6500/10000:.0f}만원&#34; → 1만원 정렬 및 칸 채우기 # :&lt;8 → 왼쪽 정렬, 8칸 # :&gt;4 → 오른쪽 정렬, 4칸 print(f&#34;{&#39;팀명&#39;:&lt;8} {&#39;인원&#39;:&gt;4}&#34;) print(f&#34;{&#39;개발팀&#39;:&lt;8} {3:&gt;4}&#34;) 2. List Comprehension for 반복문으로 리스트를 만드는 과정을 한 줄로 압축하는 문법.">
+	<meta itemprop="datePublished" content="2026-06-04T00:00:00+09:00">
+	<meta itemprop="dateModified" content="2026-06-04T00:00:00+09:00">
+	<meta itemprop="wordCount" content="1357">
+	<meta name="twitter:card" content="summary">
+	<meta name="twitter:title" content="My First Post">
+	<meta name="twitter:description" content="Python 심화 문법 요약 실무에서 자주 쓰는 6가지 심화 문법 패턴 개념 정리
+1. f-string 포맷팅 Python 3.6&#43;에서 사용 가능한 문자열 포맷팅 방법. 문자열 앞에 f를 붙이고, {중괄호} 안에 변수나 표현식을 직접 삽입한다.
+name = &#34;Alice&#34; score = 85 # 기본 변수 삽입 print(f&#34;이름: {name}&#34;) # 표현식 직접 사용 print(f&#34;합격 여부: {&#39;합격&#39; if score &gt;= 60 else &#39;불합격&#39;}&#34;) 숫자 포맷 지정자 형식 의미 예시 :.2f 소수점 n자리 f&#34;{3.14159:.2f}&#34; → 3.14 :, 천 단위 쉼표 f&#34;{1000000:,}&#34; → 1,000,000 :.1% 소수 → 퍼센트 (×100 후 % 붙임) f&#34;{0.123:.1%}&#34; → 12.3% :.0f 소수점 없이 반올림 f&#34;{6500/10000:.0f}만원&#34; → 1만원 정렬 및 칸 채우기 # :&lt;8 → 왼쪽 정렬, 8칸 # :&gt;4 → 오른쪽 정렬, 4칸 print(f&#34;{&#39;팀명&#39;:&lt;8} {&#39;인원&#39;:&gt;4}&#34;) print(f&#34;{&#39;개발팀&#39;:&lt;8} {3:&gt;4}&#34;) 2. List Comprehension for 반복문으로 리스트를 만드는 과정을 한 줄로 압축하는 문법.">
+
+	
+  </head><body class="ma0 avenir bg-near-white development is-page is-page page-0604_python_advanced_summary">
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l center items-center justify-between">
+    <a href="/" class="f3 fw2 hover-white white-90 dib no-underline">
+      
+        My New Hugo Project
+      
+    </a>
+    <div class="flex-l items-center">
+      
+
+      
+      <div class="ananke-socials"></div>
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  
+
+  <article class="page-0604_python_advanced_summary flex-l mw7 center ph3 flex-wrap justify-between">
+    <header class="mt4 w-100"><aside class="instapaper_ignoref b helvetica tracked ttu">
+    Posts
+</aside><div id="sharing" class="mt3 ananke-socials"></div>
+<h1 class="f1 athelas mt3 mb1">My First Post</h1>
+      
+      
+      
+      <time class="f6 mv4 dib tracked" datetime="2026-06-04T00:00:00+09:00">June 4, 2026</time>
+      
+
+      
+      
+    </header>
+    <div class="nested-copy-line-height lh-copy serif f4 nested-links mid-gray pr4-l w-100-l"><h1 id="python-심화-문법-요약">Python 심화 문법 요약</h1>
+<blockquote>
+<p>실무에서 자주 쓰는 6가지 심화 문법 패턴 개념 정리</p>
+</blockquote>
+<hr>
+<h2 id="1-f-string-포맷팅">1. f-string 포맷팅</h2>
+<p>Python 3.6+에서 사용 가능한 문자열 포맷팅 방법. 문자열 앞에 <code>f</code>를 붙이고, <code>{중괄호}</code> 안에 변수나 표현식을 직접 삽입한다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Alice&#34;</span>
+</span></span><span style="display:flex;"><span>score <span style="color:#f92672">=</span> <span style="color:#ae81ff">85</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 기본 변수 삽입</span>
+</span></span><span style="display:flex;"><span>print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;이름: </span><span style="color:#e6db74">{</span>name<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 표현식 직접 사용</span>
+</span></span><span style="display:flex;"><span>print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;합격 여부: </span><span style="color:#e6db74">{</span><span style="color:#e6db74">&#39;합격&#39;</span> <span style="color:#66d9ef">if</span> score <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">60</span> <span style="color:#66d9ef">else</span> <span style="color:#e6db74">&#39;불합격&#39;</span><span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span></code></pre></div><h3 id="숫자-포맷-지정자">숫자 포맷 지정자</h3>
+<table>
+	<thead>
+			<tr>
+					<th>형식</th>
+					<th>의미</th>
+					<th>예시</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>:.2f</code></td>
+					<td>소수점 n자리</td>
+					<td><code>f&quot;{3.14159:.2f}&quot;</code> → <code>3.14</code></td>
+			</tr>
+			<tr>
+					<td><code>:,</code></td>
+					<td>천 단위 쉼표</td>
+					<td><code>f&quot;{1000000:,}&quot;</code> → <code>1,000,000</code></td>
+			</tr>
+			<tr>
+					<td><code>:.1%</code></td>
+					<td>소수 → 퍼센트 (×100 후 % 붙임)</td>
+					<td><code>f&quot;{0.123:.1%}&quot;</code> → <code>12.3%</code></td>
+			</tr>
+			<tr>
+					<td><code>:.0f</code></td>
+					<td>소수점 없이 반올림</td>
+					<td><code>f&quot;{6500/10000:.0f}만원&quot;</code> → <code>1만원</code></td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="정렬-및-칸-채우기">정렬 및 칸 채우기</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># :&lt;8  → 왼쪽 정렬, 8칸</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># :&gt;4  → 오른쪽 정렬, 4칸</span>
+</span></span><span style="display:flex;"><span>print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span><span style="color:#e6db74">&#39;팀명&#39;</span><span style="color:#e6db74">:</span><span style="color:#e6db74">&lt;8</span><span style="color:#e6db74">}</span><span style="color:#e6db74"> </span><span style="color:#e6db74">{</span><span style="color:#e6db74">&#39;인원&#39;</span><span style="color:#e6db74">:</span><span style="color:#e6db74">&gt;4</span><span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span><span style="color:#e6db74">&#39;개발팀&#39;</span><span style="color:#e6db74">:</span><span style="color:#e6db74">&lt;8</span><span style="color:#e6db74">}</span><span style="color:#e6db74"> </span><span style="color:#e6db74">{</span><span style="color:#ae81ff">3</span><span style="color:#e6db74">:</span><span style="color:#e6db74">&gt;4</span><span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span></code></pre></div><hr>
+<h2 id="2-list-comprehension">2. List Comprehension</h2>
+<p><code>for</code> 반복문으로 리스트를 만드는 과정을 한 줄로 압축하는 문법.</p>
+<h3 id="기본-구조">기본 구조</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># 형식 1: 단순 변환</span>
+</span></span><span style="display:flex;"><span>new_list <span style="color:#f92672">=</span> [표현식 <span style="color:#66d9ef">for</span> 변수 <span style="color:#f92672">in</span> 시퀀스]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 형식 2: 조건 필터링 (if가 뒤에 위치)</span>
+</span></span><span style="display:flex;"><span>new_list <span style="color:#f92672">=</span> [표현식 <span style="color:#66d9ef">for</span> 변수 <span style="color:#f92672">in</span> 시퀀스 <span style="color:#66d9ef">if</span> 조건]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 형식 3: if-else 변환 (if-else가 앞에 위치 — 헷갈리기 쉬운 포인트!)</span>
+</span></span><span style="display:flex;"><span>new_list <span style="color:#f92672">=</span> [참일때값 <span style="color:#66d9ef">if</span> 조건 <span style="color:#66d9ef">else</span> 거짓일때값 <span style="color:#66d9ef">for</span> 변수 <span style="color:#f92672">in</span> 시퀀스]
+</span></span></code></pre></div><h3 id="-if만-있을-때-vs-if-else가-있을-때-위치가-다르다">⚠️ if만 있을 때 vs if-else가 있을 때: 위치가 다르다</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># if만 있을 때 → if가 for 뒤에 위치 (필터링, 조건 불만족 시 제외)</span>
+</span></span><span style="display:flex;"><span>evens <span style="color:#f92672">=</span> [x <span style="color:#66d9ef">for</span> x <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">10</span>) <span style="color:#66d9ef">if</span> x <span style="color:#f92672">%</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># → [0, 2, 4, 6, 8]</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># if-else가 있을 때 → if-else가 for 앞에 위치 (변환, 모든 요소 유지)</span>
+</span></span><span style="display:flex;"><span>labels <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;짝수&#34;</span> <span style="color:#66d9ef">if</span> x <span style="color:#f92672">%</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">else</span> <span style="color:#e6db74">&#34;홀수&#34;</span> <span style="color:#66d9ef">for</span> x <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">5</span>)]
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># → [&#39;짝수&#39;, &#39;홀수&#39;, &#39;짝수&#39;, &#39;홀수&#39;, &#39;짝수&#39;]</span>
+</span></span></code></pre></div><h3 id="딕셔너리-컴프리헨션-응용">딕셔너리 컴프리헨션 (응용)</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>members <span style="color:#f92672">=</span> [{<span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;Alice&#34;</span>, <span style="color:#e6db74">&#34;salary&#34;</span>: <span style="color:#ae81ff">6500</span>}, {<span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;Bob&#34;</span>, <span style="color:#e6db74">&#34;salary&#34;</span>: <span style="color:#ae81ff">5200</span>}]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># { 키: 값 for 변수 in 시퀀스 }</span>
+</span></span><span style="display:flex;"><span>salary_dict <span style="color:#f92672">=</span> {m[<span style="color:#e6db74">&#34;name&#34;</span>]: m[<span style="color:#e6db74">&#34;salary&#34;</span>] <span style="color:#66d9ef">for</span> m <span style="color:#f92672">in</span> members}
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># → {&#39;Alice&#39;: 6500, &#39;Bob&#39;: 5200}</span>
+</span></span></code></pre></div><hr>
+<h2 id="3-sorted--리스트-정렬">3. sorted — 리스트 정렬</h2>
+<h3 id="sorted-vs-sort-차이"><code>sorted()</code> vs <code>.sort()</code> 차이</h3>
+<table>
+	<thead>
+			<tr>
+					<th>구분</th>
+					<th>원본 변경</th>
+					<th>반환값</th>
+					<th>사용 권장 상황</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>sorted(list)</code></td>
+					<td>유지</td>
+					<td>정렬된 <strong>새 리스트</strong></td>
+					<td>원본을 보존해야 할 때 (대부분의 경우)</td>
+			</tr>
+			<tr>
+					<td><code>list.sort()</code></td>
+					<td>변경됨</td>
+					<td><code>None</code></td>
+					<td>원본 변경이 확실히 필요할 때</td>
+			</tr>
+	</tbody>
+</table>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>scores <span style="color:#f92672">=</span> [<span style="color:#ae81ff">85</span>, <span style="color:#ae81ff">92</span>, <span style="color:#ae81ff">78</span>, <span style="color:#ae81ff">96</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>result <span style="color:#f92672">=</span> scores<span style="color:#f92672">.</span>sort()   <span style="color:#75715e"># 원본이 바뀌고, 반환값은 None</span>
+</span></span><span style="display:flex;"><span>print(result)            <span style="color:#75715e"># None  ← 자주 하는 실수!</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>sorted_scores <span style="color:#f92672">=</span> sorted(scores)  <span style="color:#75715e"># 원본 유지, 새 리스트 반환</span>
+</span></span></code></pre></div><h3 id="key-매개변수로-정렬-기준-지정"><code>key</code> 매개변수로 정렬 기준 지정</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>members <span style="color:#f92672">=</span> [
+</span></span><span style="display:flex;"><span>    {<span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;Alice&#34;</span>, <span style="color:#e6db74">&#34;salary&#34;</span>: <span style="color:#ae81ff">6500</span>},
+</span></span><span style="display:flex;"><span>    {<span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;Bob&#34;</span>,   <span style="color:#e6db74">&#34;salary&#34;</span>: <span style="color:#ae81ff">5200</span>},
+</span></span><span style="display:flex;"><span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># key=함수 → 각 요소에 함수를 적용한 결과 기준으로 정렬</span>
+</span></span><span style="display:flex;"><span>by_salary <span style="color:#f92672">=</span> sorted(members, key<span style="color:#f92672">=</span><span style="color:#66d9ef">lambda</span> m: m[<span style="color:#e6db74">&#34;salary&#34;</span>], reverse<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span></code></pre></div><h3 id="다중-기준-정렬-튜플-활용">다중 기준 정렬 (튜플 활용)</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># 팀명 오름차순, 같은 팀 내에서는 연봉 내림차순</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 내림차순으로 만들고 싶은 기준은 앞에 - 부호를 붙임</span>
+</span></span><span style="display:flex;"><span>multi_sorted <span style="color:#f92672">=</span> sorted(members, key<span style="color:#f92672">=</span><span style="color:#66d9ef">lambda</span> m: (m[<span style="color:#e6db74">&#34;team&#34;</span>], <span style="color:#f92672">-</span>m[<span style="color:#e6db74">&#34;salary&#34;</span>]))
+</span></span></code></pre></div><hr>
+<h2 id="4-enumerate--인덱스와-값을-동시에-순회">4. enumerate — 인덱스와 값을 동시에 순회</h2>
+<p>리스트를 반복할 때 인덱스와 값을 동시에 가져오는 내장 함수.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>seasons <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;봄&#34;</span>, <span style="color:#e6db74">&#34;여름&#34;</span>, <span style="color:#e6db74">&#34;가을&#34;</span>, <span style="color:#e6db74">&#34;겨울&#34;</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 기존 방식 (불편)</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(len(seasons)):
+</span></span><span style="display:flex;"><span>    print(i, seasons[i])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># enumerate 사용 (간결)</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> idx, season <span style="color:#f92672">in</span> enumerate(seasons):
+</span></span><span style="display:flex;"><span>    print(idx, season)
+</span></span></code></pre></div><h3 id="start-매개변수로-시작-번호-지정"><code>start</code> 매개변수로 시작 번호 지정</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>teams <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;개발팀&#34;</span>, <span style="color:#e6db74">&#34;기획팀&#34;</span>, <span style="color:#e6db74">&#34;영업팀&#34;</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 1번부터 시작 (사용자에게 보여줄 순위, 번호 등에 자주 사용)</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> i, team <span style="color:#f92672">in</span> enumerate(teams, start<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>):
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>i<span style="color:#e6db74">}</span><span style="color:#e6db74">번 팀: </span><span style="color:#e6db74">{</span>team<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span></code></pre></div><h3 id="enumerate-객체는-직접-출력하면-내용이-안-보인다">enumerate 객체는 직접 출력하면 내용이 안 보인다</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>members <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;Alice&#34;</span>, <span style="color:#e6db74">&#34;Bob&#34;</span>, <span style="color:#e6db74">&#34;Carol&#34;</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>print(enumerate(members))         <span style="color:#75715e"># &lt;enumerate object at 0x...&gt; ← 내용 안 보임</span>
+</span></span><span style="display:flex;"><span>print(list(enumerate(members)))   <span style="color:#75715e"># [(0, &#39;Alice&#39;), (1, &#39;Bob&#39;), (2, &#39;Carol&#39;)]</span>
+</span></span></code></pre></div><hr>
+<h2 id="5-lambda--map">5. lambda + map</h2>
+<h3 id="lambda-이름-없는-일회용-함수">lambda: 이름 없는 일회용 함수</h3>
+<p><code>def</code>로 함수를 정의하는 대신, 간단한 함수를 한 줄로 표현할 때 사용.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># 형식: lambda 매개변수: 반환값(표현식)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 일반 함수</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">square</span>(x):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> x <span style="color:#f92672">**</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># lambda로 동일 표현</span>
+</span></span><span style="display:flex;"><span>square <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> x: x <span style="color:#f92672">**</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>print(square(<span style="color:#ae81ff">5</span>))  <span style="color:#75715e"># 25</span>
+</span></span></code></pre></div><h3 id="map-시퀀스의-모든-요소에-함수를-일괄-적용">map: 시퀀스의 모든 요소에 함수를 일괄 적용</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># 형식: map(함수, 시퀀스)</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 반환 타입은 map 객체 → list()로 변환해서 사용</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>numbers <span style="color:#f92672">=</span> [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>doubled <span style="color:#f92672">=</span> list(map(<span style="color:#66d9ef">lambda</span> x: x <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>, numbers))
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># → [2, 4, 6, 8, 10]</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 내장 함수도 map에 사용 가능</span>
+</span></span><span style="display:flex;"><span>str_nums <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;1&#34;</span>, <span style="color:#e6db74">&#34;2&#34;</span>, <span style="color:#e6db74">&#34;3&#34;</span>]
+</span></span><span style="display:flex;"><span>int_nums <span style="color:#f92672">=</span> list(map(int, str_nums))   <span style="color:#75715e"># 문자열 → 정수</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># → [1, 2, 3]</span>
+</span></span></code></pre></div><h3 id="filter-조건에-맞는-요소만-추출">filter: 조건에 맞는 요소만 추출</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># 형식: filter(함수, 시퀀스)</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 함수가 True를 반환하는 요소만 남김</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>numbers <span style="color:#f92672">=</span> [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">6</span>, <span style="color:#ae81ff">7</span>, <span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">9</span>, <span style="color:#ae81ff">10</span>]
+</span></span><span style="display:flex;"><span>evens <span style="color:#f92672">=</span> list(filter(<span style="color:#66d9ef">lambda</span> x: x <span style="color:#f92672">%</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>, numbers))
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># → [2, 4, 6, 8, 10]</span>
+</span></span></code></pre></div><h3 id="lambda의-한계">lambda의 한계</h3>
+<p>lambda는 단순한 한 줄 표현식만 가능하다. 조건 분기가 여러 개거나 로직이 복잡하면 일반 <code>def</code> 함수를 사용하는 것이 좋다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># 복잡한 로직 → def 사용</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">calculate_bonus</span>(member):
+</span></span><span style="display:flex;"><span>    base <span style="color:#f92672">=</span> member[<span style="color:#e6db74">&#34;salary&#34;</span>] <span style="color:#f92672">*</span> <span style="color:#ae81ff">0.1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> member<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;years&#34;</span>, <span style="color:#ae81ff">1</span>) <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">5</span>:
+</span></span><span style="display:flex;"><span>        base <span style="color:#f92672">*=</span> <span style="color:#ae81ff">1.05</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> member<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;score&#34;</span>, <span style="color:#ae81ff">80</span>) <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">90</span>:
+</span></span><span style="display:flex;"><span>        base <span style="color:#f92672">*=</span> <span style="color:#ae81ff">1.1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> int(base)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>bonuses <span style="color:#f92672">=</span> list(map(calculate_bonus, members))
+</span></span></code></pre></div><hr>
+<h2 id="6-if-__name__--__main__">6. <code>if __name__ == &quot;__main__&quot;</code></h2>
+<h3 id="핵심-개념">핵심 개념</h3>
+<p>Python 파일이 실행될 때 <code>__name__</code> 변수에 자동으로 값이 할당된다.</p>
+<table>
+	<thead>
+			<tr>
+					<th>실행 방법</th>
+					<th><code>__name__</code> 값</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>python 파일명.py</code>로 직접 실행</td>
+					<td><code>&quot;__main__&quot;</code></td>
+			</tr>
+			<tr>
+					<td>다른 파일에서 <code>import</code>로 불러올 때</td>
+					<td><code>&quot;모듈파일명&quot;</code> (파일명)</td>
+			</tr>
+	</tbody>
+</table>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># utils.py</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">greet</span>(name):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;안녕하세요, </span><span style="color:#e6db74">{</span>name<span style="color:#e6db74">}</span><span style="color:#e6db74">님!&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">add</span>(a, b):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> a <span style="color:#f92672">+</span> b
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 이 블록은 직접 실행할 때만 동작, import 시에는 실행되지 않음</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    print(greet(<span style="color:#e6db74">&#34;Alice&#34;</span>))
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;3 + 4 = </span><span style="color:#e6db74">{</span>add(<span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>)<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span></code></pre></div><h3 id="왜-이-패턴을-쓰는가">왜 이 패턴을 쓰는가?</h3>
+<p>함수나 클래스를 정의한 파일을 다른 파일에서 <code>import</code>해서 재사용할 때, 테스트 코드나 실행 코드가 자동으로 실행되는 것을 막기 위해서다.</p>
+<pre tabindex="0"><code>[직접 실행]  python utils.py  →  __name__ == &#34;__main__&#34;  →  if 블록 실행 O
+[import 시]  import utils     →  __name__ == &#34;utils&#34;     →  if 블록 실행 X
+</code></pre><h3 id="jupyter-notebook에서의-동작">Jupyter Notebook에서의 동작</h3>
+<p>Jupyter에서는 항상 <code>__name__ == &quot;__main__&quot;</code>이 되기 때문에 조건이 항상 <code>True</code>다. 이 패턴의 실질적인 의미는 <code>.py</code> 파일을 터미널에서 실행할 때 드러난다.</p>
+<h3 id="sysexitmain-패턴"><code>sys.exit(main())</code> 패턴</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> sys
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">main</span>():
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;프로그램 시작&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 핵심 로직...</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>   <span style="color:#75715e"># 0 = 정상 종료 코드</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    sys<span style="color:#f92672">.</span>exit(main())
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># main()의 반환값(0)이 sys.exit()에 전달되어 운영체제에 종료 코드를 알림</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># ⚠️ Jupyter에서 sys.exit() 직접 실행 시 커널이 종료되므로 주의</span>
+</span></span></code></pre></div><hr>
+<h2 id="보충-lambda-완전-정복">보충: lambda 완전 정복</h2>
+<p>lambda가 헷갈리는 이유는 주로 &ldquo;언제, 어떻게 쓰는가&quot;가 명확하지 않아서다. 아래에 패턴별로 정리한다.</p>
+<h3 id="lambda의-구조">lambda의 구조</h3>
+<pre tabindex="0"><code>lambda 매개변수1, 매개변수2 : 반환할 표현식
+</code></pre><ul>
+<li><code>def</code> 없이 함수를 만든다.</li>
+<li><code>return</code> 키워드를 쓰지 않는다. 콜론(<code>:</code>) 뒤의 표현식이 곧 반환값이다.</li>
+<li>표현식은 딱 <strong>하나</strong>만 가능하다 (여러 줄 불가).</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># 매개변수 없음</span>
+</span></span><span style="display:flex;"><span>f <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span>: <span style="color:#e6db74">&#34;hello&#34;</span>
+</span></span><span style="display:flex;"><span>print(f())  <span style="color:#75715e"># hello</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 매개변수 1개</span>
+</span></span><span style="display:flex;"><span>double <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> x: x <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>print(double(<span style="color:#ae81ff">5</span>))  <span style="color:#75715e"># 10</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 매개변수 2개</span>
+</span></span><span style="display:flex;"><span>add <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> x, y: x <span style="color:#f92672">+</span> y
+</span></span><span style="display:flex;"><span>print(add(<span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>))  <span style="color:#75715e"># 7</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 조건 표현식 포함</span>
+</span></span><span style="display:flex;"><span>grade <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> score: <span style="color:#e6db74">&#34;합격&#34;</span> <span style="color:#66d9ef">if</span> score <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">60</span> <span style="color:#66d9ef">else</span> <span style="color:#e6db74">&#34;불합격&#34;</span>
+</span></span><span style="display:flex;"><span>print(grade(<span style="color:#ae81ff">85</span>))   <span style="color:#75715e"># 합격</span>
+</span></span><span style="display:flex;"><span>print(grade(<span style="color:#ae81ff">40</span>))   <span style="color:#75715e"># 불합격</span>
+</span></span></code></pre></div><h3 id="lambda를-변수에-저장하는-것-vs-즉시-실행">lambda를 변수에 저장하는 것 vs 즉시 실행</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># 변수에 저장 → 나중에 여러 번 호출 가능</span>
+</span></span><span style="display:flex;"><span>square <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> x: x <span style="color:#f92672">**</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>print(square(<span style="color:#ae81ff">3</span>))  <span style="color:#75715e"># 9</span>
+</span></span><span style="display:flex;"><span>print(square(<span style="color:#ae81ff">5</span>))  <span style="color:#75715e"># 25</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 즉시 실행 → 한 번만 쓰고 버릴 때</span>
+</span></span><span style="display:flex;"><span>result <span style="color:#f92672">=</span> (<span style="color:#66d9ef">lambda</span> x, y: x <span style="color:#f92672">+</span> y)(<span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>)
+</span></span><span style="display:flex;"><span>print(result)  <span style="color:#75715e"># 7</span>
+</span></span></code></pre></div><h3 id="실전에서-lambda를-가장-많이-쓰는-3가지-상황">실전에서 lambda를 가장 많이 쓰는 3가지 상황</h3>
+<p><strong>① sorted의 key</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>members <span style="color:#f92672">=</span> [{<span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;Alice&#34;</span>, <span style="color:#e6db74">&#34;salary&#34;</span>: <span style="color:#ae81ff">6500</span>}, {<span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;Bob&#34;</span>, <span style="color:#e6db74">&#34;salary&#34;</span>: <span style="color:#ae81ff">5200</span>}]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># key=lambda m: m[&#34;salary&#34;]</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># → 각 요소(m)를 받아서 salary 값을 반환 → 그 값을 기준으로 정렬</span>
+</span></span><span style="display:flex;"><span>by_salary <span style="color:#f92672">=</span> sorted(members, key<span style="color:#f92672">=</span><span style="color:#66d9ef">lambda</span> m: m[<span style="color:#e6db74">&#34;salary&#34;</span>], reverse<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span></code></pre></div><p><strong>② map과 함께 — 전체 요소 변환</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>salaries <span style="color:#f92672">=</span> [<span style="color:#ae81ff">6500</span>, <span style="color:#ae81ff">5200</span>, <span style="color:#ae81ff">6100</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 각 요소(x)를 받아서 1.1을 곱한 값 반환 → 전체 리스트에 적용</span>
+</span></span><span style="display:flex;"><span>raised <span style="color:#f92672">=</span> list(map(<span style="color:#66d9ef">lambda</span> x: int(x <span style="color:#f92672">*</span> <span style="color:#ae81ff">1.1</span>), salaries))
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># → [7150, 5720, 6710]</span>
+</span></span></code></pre></div><p><strong>③ filter와 함께 — 조건 필터링</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>salaries <span style="color:#f92672">=</span> [<span style="color:#ae81ff">6500</span>, <span style="color:#ae81ff">5200</span>, <span style="color:#ae81ff">4800</span>, <span style="color:#ae81ff">3600</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 각 요소(x)를 받아서 True/False 반환 → True인 것만 남김</span>
+</span></span><span style="display:flex;"><span>high <span style="color:#f92672">=</span> list(filter(<span style="color:#66d9ef">lambda</span> x: x <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">5000</span>, salaries))
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># → [6500, 5200]</span>
+</span></span></code></pre></div><h3 id="lambda-vs-list-comprehension--언제-뭘-쓸까">lambda vs List Comprehension — 언제 뭘 쓸까?</h3>
+<p><code>map + lambda</code>와 List Comprehension은 많은 경우 같은 결과를 내므로, 어느 쪽을 써야 할지 헷갈릴 수 있다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>numbers <span style="color:#f92672">=</span> [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 두 표현이 결과는 동일</span>
+</span></span><span style="display:flex;"><span>a <span style="color:#f92672">=</span> list(map(<span style="color:#66d9ef">lambda</span> x: x <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>, numbers))
+</span></span><span style="display:flex;"><span>b <span style="color:#f92672">=</span> [x <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span> <span style="color:#66d9ef">for</span> x <span style="color:#f92672">in</span> numbers]
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 둘 다 → [2, 4, 6, 8, 10]</span>
+</span></span></code></pre></div><p>실무에서는 <strong>List Comprehension을 더 많이 사용</strong>하는 경향이 있다. 더 읽기 쉽고 Pythonic하기 때문이다. 단, <code>sorted</code>의 <code>key</code>처럼 <strong>함수 자체를 인자로 넘겨야 하는 경우</strong>에는 lambda가 필수다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># 이 경우는 lambda만 가능 (함수 객체를 key 인자에 전달해야 함)</span>
+</span></span><span style="display:flex;"><span>sorted(members, key<span style="color:#f92672">=</span><span style="color:#66d9ef">lambda</span> m: m[<span style="color:#e6db74">&#34;salary&#34;</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># List Comprehension으로는 대체 불가</span>
+</span></span></code></pre></div><h3 id="자주-하는-실수">자주 하는 실수</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># ❌ lambda 안에 return을 쓰면 안 된다</span>
+</span></span><span style="display:flex;"><span>f <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> x: <span style="color:#66d9ef">return</span> x <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>   <span style="color:#75715e"># SyntaxError!</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># ✅ 콜론 뒤에 바로 표현식</span>
+</span></span><span style="display:flex;"><span>f <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> x: x <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># ❌ 여러 줄 표현식은 불가</span>
+</span></span><span style="display:flex;"><span>f <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> x:
+</span></span><span style="display:flex;"><span>    x <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>       <span style="color:#75715e"># SyntaxError!</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># ✅ 복잡한 로직은 def 함수로</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">f</span>(x):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> x <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>
+</span></span></code></pre></div><ul class="pa0">
+  
+</ul>
+
+      
+    </div></article>
+
+    </main>
+    <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white white-70 dn dib-ns pv2 ph3 no-underline" href="http://localhost:1313/" >
+    &copy;  My New Hugo Project 2026 
+  </a>
+    <div><div class="ananke-socials"></div>
+</div>
+  </div>
+</footer>
+
+  </body>
+</html>
+
+
+
