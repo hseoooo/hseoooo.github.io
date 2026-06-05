@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Posts on Joys library</title>
-    <link>http://localhost:1313/posts/</link>
+    <link>https://hseoooo.github.io/posts/</link>
     <description>Recent content in Posts on Joys library</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <lastBuildDate>Thu, 04 Jun 2026 16:00:00 +0900</lastBuildDate>
-    <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://hseoooo.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>개발환경 설정 (UV, Git)</title>
-      <link>http://localhost:1313/posts/dev_setup_guide-3750251fbd3880568578d17898254d6d/</link>
+      <link>https://hseoooo.github.io/posts/dev_setup_guide-3750251fbd3880568578d17898254d6d/</link>
       <pubDate>Thu, 04 Jun 2026 16:00:00 +0900</pubDate>
-      <guid>http://localhost:1313/posts/dev_setup_guide-3750251fbd3880568578d17898254d6d/</guid>
+      <guid>https://hseoooo.github.io/posts/dev_setup_guide-3750251fbd3880568578d17898254d6d/</guid>
       <description>&lt;h1 id=&#34;dev_setup_guide&#34;&gt;dev_setup_guide&lt;/h1&gt;
 &lt;h1 id=&#34;개발환경-설정-실습-요약&#34;&gt;개발환경 설정 실습 요약&lt;/h1&gt;
 &lt;h2 id=&#34;1-github-레포지토리-생성&#34;&gt;1. GitHub 레포지토리 생성&lt;/h2&gt;
@@ -44,9 +44,9 @@
     </item>
     <item>
       <title>0604 Python 중급 문법 2</title>
-      <link>http://localhost:1313/posts/0604_python_advanced_summary/</link>
+      <link>https://hseoooo.github.io/posts/0604_python_advanced_summary/</link>
       <pubDate>Thu, 04 Jun 2026 00:00:00 +0900</pubDate>
-      <guid>http://localhost:1313/posts/0604_python_advanced_summary/</guid>
+      <guid>https://hseoooo.github.io/posts/0604_python_advanced_summary/</guid>
       <description>&lt;h1 id=&#34;python-심화-문법-요약&#34;&gt;Python 심화 문법 요약&lt;/h1&gt;
 &lt;blockquote&gt;
 &lt;p&gt;실무에서 자주 쓰는 6가지 심화 문법 패턴 개념 정리&lt;/p&gt;
@@ -105,9 +105,9 @@
     </item>
     <item>
       <title>My First Post</title>
-      <link>http://localhost:1313/posts/my-first-post/</link>
+      <link>https://hseoooo.github.io/posts/my-first-post/</link>
       <pubDate>Mon, 01 Jun 2026 21:33:32 +0900</pubDate>
-      <guid>http://localhost:1313/posts/my-first-post/</guid>
+      <guid>https://hseoooo.github.io/posts/my-first-post/</guid>
       <description>&lt;p&gt;This is my first post.
 It took almost a week to post this single paragraph on my website, but I feel proud of myself learning completely new concepts without hesitance.
 Here, I will post my class notes, my projects, and more!&lt;/p&gt;</description>
