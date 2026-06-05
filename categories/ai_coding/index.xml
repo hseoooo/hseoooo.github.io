@@ -6,8 +6,95 @@
     <description>Recent content in AI_Coding on Joys library</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 04 Jun 2026 16:00:00 +0900</lastBuildDate>
+    <lastBuildDate>Fri, 05 Jun 2026 17:30:00 +0900</lastBuildDate>
     <atom:link href="https://hseoooo.github.io/categories/ai_coding/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>0605 생성형 AI 기초 </title>
+      <link>https://hseoooo.github.io/posts/%EC%83%9D%EC%84%B1%ED%98%95_ai_%EA%B0%9C%EB%A1%A0_%EC%9A%94%EC%95%BD/</link>
+      <pubDate>Fri, 05 Jun 2026 17:30:00 +0900</pubDate>
+      <guid>https://hseoooo.github.io/posts/%EC%83%9D%EC%84%B1%ED%98%95_ai_%EA%B0%9C%EB%A1%A0_%EC%9A%94%EC%95%BD/</guid>
+      <description>&lt;h1 id=&#34;생성형-ai-개론-요약&#34;&gt;생성형 AI 개론 요약&lt;/h1&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;1-ai란-무엇인가&#34;&gt;1. AI란 무엇인가&lt;/h2&gt;
+&lt;p&gt;AI(인공지능)는 데이터를 학습하여 인간처럼 생각하고 판단하는 지능적 작업을 수행하는 기술이다.&lt;/p&gt;
+&lt;p&gt;AI가 하는 일은 크게 네 가지로 나뉜다.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;인식&lt;/strong&gt;: 이미지, 음성 인식 (예: 사진 속 얼굴 인식, 음성 텍스트 변환)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;예측&lt;/strong&gt;: 데이터 기반 미래 예측 (예: 주가 예측, 날씨 예보)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;판단&lt;/strong&gt;: 추천 및 의사결정 지원 (예: 넷플릭스 콘텐츠 추천)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;생성&lt;/strong&gt;: 텍스트, 이미지 생성 (예: ChatGPT, Midjourney)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;2-ai-기술의-발전-단계&#34;&gt;2. AI 기술의 발전 단계&lt;/h2&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;시대&lt;/th&gt;
+					&lt;th&gt;기술&lt;/th&gt;
+					&lt;th&gt;핵심 특징&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;1980s&lt;/td&gt;
+					&lt;td&gt;규칙 기반 AI&lt;/td&gt;
+					&lt;td&gt;사람이 입력한 규칙대로 작업 수행&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;2000s&lt;/td&gt;
+					&lt;td&gt;머신러닝&lt;/td&gt;
+					&lt;td&gt;데이터로 패턴 학습&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;2010s&lt;/td&gt;
+					&lt;td&gt;딥러닝&lt;/td&gt;
+					&lt;td&gt;이미지·음성·언어 인식&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;2020s&lt;/td&gt;
+					&lt;td&gt;생성형 AI&lt;/td&gt;
+					&lt;td&gt;텍스트·이미지·영상 생성&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;3-왜-갑자기-ai인가&#34;&gt;3. 왜 갑자기 AI인가&lt;/h2&gt;
+&lt;p&gt;AI가 폭발적으로 확산된 데는 세 가지 요인이 맞물린 결과다.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>0605 Python Class </title>
+      <link>https://hseoooo.github.io/posts/python_%ED%81%B4%EB%9E%98%EC%8A%A4_%EC%9A%94%EC%95%BD/</link>
+      <pubDate>Fri, 05 Jun 2026 17:00:00 +0900</pubDate>
+      <guid>https://hseoooo.github.io/posts/python_%ED%81%B4%EB%9E%98%EC%8A%A4_%EC%9A%94%EC%95%BD/</guid>
+      <description>&lt;h1 id=&#34;python-클래스class-개념-요약&#34;&gt;Python 클래스(Class) 개념 요약&lt;/h1&gt;
+&lt;blockquote&gt;
+&lt;p&gt;IT 회사 팀원/부서 예시로 익히는 클래스의 모든 개념&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;1-클래스class란&#34;&gt;1. 클래스(Class)란?&lt;/h2&gt;
+&lt;p&gt;클래스는 &lt;strong&gt;객체를 만들기 위한 설계도(청사진)&lt;/strong&gt; 다.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;클래스(Class)    = 설계도       → &amp;#34;팀원&amp;#34;이라는 개념 자체
+인스턴스(Instance) = 실제 물건  → 실제로 존재하는 &amp;#34;Alice&amp;#34;, &amp;#34;Bob&amp;#34;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;클래스 안에는 두 가지가 들어간다.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;속성(Attribute)&lt;/strong&gt;: 객체가 가지는 데이터 (이름, 직책, 연봉 등)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;메서드(Method)&lt;/strong&gt;: 객체가 할 수 있는 행동 (자기소개, 프로젝트 합류 등)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;가장-단순한-클래스&#34;&gt;가장 단순한 클래스&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# class 키워드 + 클래스 이름 (첫 글자는 대문자가 관례)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;TeamMember&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;pass&lt;/span&gt;  &lt;span style=&#34;color:#75715e&#34;&gt;# 아직 내용이 없는 빈 클래스&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 클래스로부터 인스턴스(객체) 생성&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;member1 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; TeamMember()  &lt;span style=&#34;color:#75715e&#34;&gt;# TeamMember 설계도로 member1이라는 실제 객체를 만든다&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;member2 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; TeamMember()  &lt;span style=&#34;color:#75715e&#34;&gt;# 또 다른 독립적인 객체&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;print(member1 &lt;span style=&#34;color:#f92672&#34;&gt;is&lt;/span&gt; member2)  &lt;span style=&#34;color:#75715e&#34;&gt;# False → 같은 설계도로 만들었지만 서로 다른 객체&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h2 id=&#34;2-__init__--생성자-인스턴스-초기화&#34;&gt;2. &lt;code&gt;__init__&lt;/code&gt; — 생성자 (인스턴스 초기화)&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;__init__&lt;/code&gt;은 인스턴스가 생성되는 순간 &lt;strong&gt;자동으로 딱 한 번 실행&lt;/strong&gt;되는 특별한 메서드다.
+주로 인스턴스의 초기 속성(데이터)을 설정하는 데 사용한다.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>개발환경 설정 (UV, Git)</title>
       <link>https://hseoooo.github.io/posts/dev_setup_guide-3750251fbd3880568578d17898254d6d/</link>
