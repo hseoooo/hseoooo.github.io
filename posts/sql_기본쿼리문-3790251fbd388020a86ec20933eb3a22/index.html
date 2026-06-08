@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>0608 SQL 기본쿼리문 | Joys library</title>
+<meta name="keywords" content="">
+<meta name="description" content="SQL_기본쿼리문
+🗄️ 오후 수업 요약 | SQL 기본 쿼리문
+
+날짜: 2026-06-08
+
+
+📖 DQL (Data Query Language) — 데이터 조회
+SELECT
+테이블에서 원하는 컬럼을 가져옵니다.
+SELECT Title FROM albums;
+SELECT * FROM tracks LIMIT 10;  -- 전체 컬럼, 10건만
+
+DISTINCT
+중복된 값을 제거하고 고유한 값만 보여줍니다.
+SELECT DISTINCT Country FROM customers;
+
+WHERE &#43; 비교 연산자
+조건에 맞는 행만 필터링합니다. (=, &gt;, &gt;=, &lt;, &lt;=, !=)
+SELECT * FROM customers WHERE Country = &#39;USA&#39;;
+SELECT * FROM tracks WHERE UnitPrice &gt; 0.99 LIMIT 10;
+
+AND / OR / NOT
+여러 조건을 조합합니다.">
+<meta name="author" content="">
+<link rel="canonical" href="https://hseoooo.github.io/posts/sql_%EA%B8%B0%EB%B3%B8%EC%BF%BC%EB%A6%AC%EB%AC%B8-3790251fbd388020a86ec20933eb3a22/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://hseoooo.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://hseoooo.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://hseoooo.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://hseoooo.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://hseoooo.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://hseoooo.github.io/posts/sql_%EA%B8%B0%EB%B3%B8%EC%BF%BC%EB%A6%AC%EB%AC%B8-3790251fbd388020a86ec20933eb3a22/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="https://hseoooo.github.io/posts/sql_%EA%B8%B0%EB%B3%B8%EC%BF%BC%EB%A6%AC%EB%AC%B8-3790251fbd388020a86ec20933eb3a22/">
+  <meta property="og:site_name" content="Joys library">
+  <meta property="og:title" content="0608 SQL 기본쿼리문">
+  <meta property="og:description" content="SQL_기본쿼리문 🗄️ 오후 수업 요약 | SQL 기본 쿼리문 날짜: 2026-06-08
+📖 DQL (Data Query Language) — 데이터 조회 SELECT 테이블에서 원하는 컬럼을 가져옵니다.
+SELECT Title FROM albums; SELECT * FROM tracks LIMIT 10; -- 전체 컬럼, 10건만 DISTINCT 중복된 값을 제거하고 고유한 값만 보여줍니다.
+SELECT DISTINCT Country FROM customers; WHERE &#43; 비교 연산자 조건에 맞는 행만 필터링합니다. (=, &gt;, &gt;=, &lt;, &lt;=, !=)
+SELECT * FROM customers WHERE Country = &#39;USA&#39;; SELECT * FROM tracks WHERE UnitPrice &gt; 0.99 LIMIT 10; AND / OR / NOT 여러 조건을 조합합니다.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2026-06-08T22:20:00+09:00">
+    <meta property="article:modified_time" content="2026-06-08T22:20:00+09:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="0608 SQL 기본쿼리문">
+  <meta name="twitter:description" content="SQL_기본쿼리문 🗄️ 오후 수업 요약 | SQL 기본 쿼리문 날짜: 2026-06-08
+📖 DQL (Data Query Language) — 데이터 조회 SELECT 테이블에서 원하는 컬럼을 가져옵니다.
+SELECT Title FROM albums; SELECT * FROM tracks LIMIT 10; -- 전체 컬럼, 10건만 DISTINCT 중복된 값을 제거하고 고유한 값만 보여줍니다.
+SELECT DISTINCT Country FROM customers; WHERE &#43; 비교 연산자 조건에 맞는 행만 필터링합니다. (=, &gt;, &gt;=, &lt;, &lt;=, !=)
+SELECT * FROM customers WHERE Country = &#39;USA&#39;; SELECT * FROM tracks WHERE UnitPrice &gt; 0.99 LIMIT 10; AND / OR / NOT 여러 조건을 조합합니다.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://hseoooo.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "0608 SQL 기본쿼리문",
+      "item": "https://hseoooo.github.io/posts/sql_%EA%B8%B0%EB%B3%B8%EC%BF%BC%EB%A6%AC%EB%AC%B8-3790251fbd388020a86ec20933eb3a22/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "0608 SQL 기본쿼리문",
+  "name": "0608 SQL 기본쿼리문",
+  "description": "SQL_기본쿼리문 🗄️ 오후 수업 요약 | SQL 기본 쿼리문 날짜: 2026-06-08\n📖 DQL (Data Query Language) — 데이터 조회 SELECT 테이블에서 원하는 컬럼을 가져옵니다.\nSELECT Title FROM albums; SELECT * FROM tracks LIMIT 10; -- 전체 컬럼, 10건만 DISTINCT 중복된 값을 제거하고 고유한 값만 보여줍니다.\nSELECT DISTINCT Country FROM customers; WHERE + 비교 연산자 조건에 맞는 행만 필터링합니다. (=, \u0026gt;, \u0026gt;=, \u0026lt;, \u0026lt;=, !=)\nSELECT * FROM customers WHERE Country = \u0026#39;USA\u0026#39;; SELECT * FROM tracks WHERE UnitPrice \u0026gt; 0.99 LIMIT 10; AND / OR / NOT 여러 조건을 조합합니다.\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "SQL_기본쿼리문 🗄️ 오후 수업 요약 | SQL 기본 쿼리문 날짜: 2026-06-08\n📖 DQL (Data Query Language) — 데이터 조회 SELECT 테이블에서 원하는 컬럼을 가져옵니다.\nSELECT Title FROM albums; SELECT * FROM tracks LIMIT 10; -- 전체 컬럼, 10건만 DISTINCT 중복된 값을 제거하고 고유한 값만 보여줍니다.\nSELECT DISTINCT Country FROM customers; WHERE + 비교 연산자 조건에 맞는 행만 필터링합니다. (=, \u003e, \u003e=, \u003c, \u003c=, !=)\nSELECT * FROM customers WHERE Country = 'USA'; SELECT * FROM tracks WHERE UnitPrice \u003e 0.99 LIMIT 10; AND / OR / NOT 여러 조건을 조합합니다.\n-- 둘 다 만족 SELECT * FROM customers WHERE Country = 'USA' AND State = 'CA'; -- 둘 중 하나 만족 SELECT * FROM customers WHERE Country = 'USA' OR Country = 'Canada'; -- 해당 조건 제외 SELECT * FROM customers WHERE NOT Country = 'USA'; SELECT * FROM customers WHERE Country != 'USA'; BETWEEN 범위 조건. 양 끝값 포함.\nSELECT * FROM invoices WHERE Total BETWEEN 5 AND 10; IN / NOT IN 여러 값 중 포함 여부를 확인합니다. OR를 간단하게 쓴 것.\nSELECT * FROM customers WHERE Country IN ('USA', 'Canada', 'Brazil'); SELECT * FROM customers WHERE Country NOT IN ('USA', 'Canada', 'Brazil'); LIKE 문자열 패턴 검색. %는 “0글자 이상 아무 문자”를 의미합니다.\nSELECT * FROM albums WHERE Title LIKE 'Rock%'; -- 'Rock'으로 시작 SELECT * FROM albums WHERE Title LIKE '%Live'; -- 'Live'로 끝남 SELECT * FROM tracks WHERE Name LIKE '%Love%'; -- 중간에 'Love' 포함 ORDER BY 결과를 정렬합니다. ASC(오름차순, 기본값) / DESC(내림차순).\nSELECT Name, UnitPrice FROM tracks ORDER BY UnitPrice DESC; SELECT Title FROM albums ORDER BY Title ASC LIMIT 10; ✏️ DML (Data Manipulation Language) — 데이터 조작 INSERT 테이블에 새 데이터를 추가합니다.\nINSERT INTO book (id, title, category, price, rating, stock) VALUES (13, 'It''s Only the Himalayas', 'Travel', 45.17, 2, 19); -- 컬럼명 생략 시, 테이블 정의 순서대로 값이 들어감 INSERT INTO book VALUES (14, 'Set Me Free', 'Young Adult', 17.46, 5, 19); UPDATE 기존 데이터를 수정합니다.\nUPDATE book SET price = 39.99 WHERE title = 'Soumission'; -- 기존 값을 기준으로 연산도 가능 UPDATE book SET stock = stock + 5 WHERE category = 'Poetry'; DELETE 조건에 맞는 행을 삭제합니다.\nDELETE FROM book WHERE rating = 1; DELETE FROM book WHERE stock \u003c 16; ⚠️ 중요 주의사항 UPDATE / DELETE 에서 WHERE를 빠뜨리면 테이블 전체가 수정·삭제됩니다!\n-- 절대 금지 (실수로 전체 삭제됨) DELETE FROM book; UPDATE book SET price = 0; 🗂️ 오늘 배운 것 한눈에 보기 구분 키워드 용도 DQL SELECT 데이터 조회 DISTINCT 중복 제거 WHERE 조건 필터링 AND / OR / NOT 복합 조건 BETWEEN 범위 조건 IN / NOT IN 목록 포함 여부 LIKE 문자열 패턴 검색 ORDER BY 정렬 LIMIT 출력 건수 제한 DML INSERT 행 추가 UPDATE 행 수정 DELETE 행 삭제 ",
+  "wordCount" : "455",
+  "inLanguage": "en",
+  "datePublished": "2026-06-08T22:20:00+09:00",
+  "dateModified": "2026-06-08T22:20:00+09:00",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://hseoooo.github.io/posts/sql_%EA%B8%B0%EB%B3%B8%EC%BF%BC%EB%A6%AC%EB%AC%B8-3790251fbd388020a86ec20933eb3a22/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Joys library",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://hseoooo.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="header-nav">
+        <div class="logo">
+            <a href="https://hseoooo.github.io/" accesskey="h" title="Joys library (Alt + H)">Joys library</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu" class="menu">
+            <li>
+                <a href="https://hseoooo.github.io/categories/ai_coding/" title="AI/개발">
+                    <span>AI/개발</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://hseoooo.github.io/categories/market-analysis/" title="시장 분석">
+                    <span>시장 분석</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      0608 SQL 기본쿼리문
+    </h1>
+    <div class="post-meta">
+
+<span title='2026-06-08 22:20:00 +0900 KST'>June 8, 2026</span>
+
+</div>
+  </header> 
+  <div class="post-content md-content"><h1 id="sql_기본쿼리문">SQL_기본쿼리문<a hidden class="anchor" aria-hidden="true" href="#sql_기본쿼리문">#</a></h1>
+<h1 id="-오후-수업-요약--sql-기본-쿼리문">🗄️ 오후 수업 요약 | SQL 기본 쿼리문<a hidden class="anchor" aria-hidden="true" href="#-오후-수업-요약--sql-기본-쿼리문">#</a></h1>
+<blockquote>
+<p>날짜: 2026-06-08</p>
+</blockquote>
+<hr>
+<h2 id="-dql-data-query-language--데이터-조회">📖 DQL (Data Query Language) — 데이터 조회<a hidden class="anchor" aria-hidden="true" href="#-dql-data-query-language--데이터-조회">#</a></h2>
+<h3 id="select">SELECT<a hidden class="anchor" aria-hidden="true" href="#select">#</a></h3>
+<p>테이블에서 원하는 컬럼을 가져옵니다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> Title <span style="color:#66d9ef">FROM</span> albums;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> tracks <span style="color:#66d9ef">LIMIT</span> <span style="color:#ae81ff">10</span>;  <span style="color:#75715e">-- 전체 컬럼, 10건만
+</span></span></span></code></pre></div><hr>
+<h3 id="distinct">DISTINCT<a hidden class="anchor" aria-hidden="true" href="#distinct">#</a></h3>
+<p>중복된 값을 제거하고 고유한 값만 보여줍니다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> <span style="color:#66d9ef">DISTINCT</span> Country <span style="color:#66d9ef">FROM</span> customers;
+</span></span></code></pre></div><hr>
+<h3 id="where--비교-연산자">WHERE + 비교 연산자<a hidden class="anchor" aria-hidden="true" href="#where--비교-연산자">#</a></h3>
+<p>조건에 맞는 행만 필터링합니다. (<code>=</code>, <code>&gt;</code>, <code>&gt;=</code>, <code>&lt;</code>, <code>&lt;=</code>, <code>!=</code>)</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> customers <span style="color:#66d9ef">WHERE</span> Country <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;USA&#39;</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> tracks <span style="color:#66d9ef">WHERE</span> UnitPrice <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">99</span> <span style="color:#66d9ef">LIMIT</span> <span style="color:#ae81ff">10</span>;
+</span></span></code></pre></div><hr>
+<h3 id="and--or--not">AND / OR / NOT<a hidden class="anchor" aria-hidden="true" href="#and--or--not">#</a></h3>
+<p>여러 조건을 조합합니다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- 둘 다 만족
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> customers <span style="color:#66d9ef">WHERE</span> Country <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;USA&#39;</span> <span style="color:#66d9ef">AND</span> <span style="color:#66d9ef">State</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;CA&#39;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- 둘 중 하나 만족
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> customers <span style="color:#66d9ef">WHERE</span> Country <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;USA&#39;</span> <span style="color:#66d9ef">OR</span> Country <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;Canada&#39;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- 해당 조건 제외
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> customers <span style="color:#66d9ef">WHERE</span> <span style="color:#66d9ef">NOT</span> Country <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;USA&#39;</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> customers <span style="color:#66d9ef">WHERE</span> Country <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#39;USA&#39;</span>;
+</span></span></code></pre></div><hr>
+<h3 id="between">BETWEEN<a hidden class="anchor" aria-hidden="true" href="#between">#</a></h3>
+<p>범위 조건. 양 끝값 포함.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> invoices <span style="color:#66d9ef">WHERE</span> Total <span style="color:#66d9ef">BETWEEN</span> <span style="color:#ae81ff">5</span> <span style="color:#66d9ef">AND</span> <span style="color:#ae81ff">10</span>;
+</span></span></code></pre></div><hr>
+<h3 id="in--not-in">IN / NOT IN<a hidden class="anchor" aria-hidden="true" href="#in--not-in">#</a></h3>
+<p>여러 값 중 포함 여부를 확인합니다. OR를 간단하게 쓴 것.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> customers <span style="color:#66d9ef">WHERE</span> Country <span style="color:#66d9ef">IN</span> (<span style="color:#e6db74">&#39;USA&#39;</span>, <span style="color:#e6db74">&#39;Canada&#39;</span>, <span style="color:#e6db74">&#39;Brazil&#39;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> customers <span style="color:#66d9ef">WHERE</span> Country <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">IN</span> (<span style="color:#e6db74">&#39;USA&#39;</span>, <span style="color:#e6db74">&#39;Canada&#39;</span>, <span style="color:#e6db74">&#39;Brazil&#39;</span>);
+</span></span></code></pre></div><hr>
+<h3 id="like">LIKE<a hidden class="anchor" aria-hidden="true" href="#like">#</a></h3>
+<p>문자열 패턴 검색. <code>%</code>는 “0글자 이상 아무 문자”를 의미합니다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> albums <span style="color:#66d9ef">WHERE</span> Title <span style="color:#66d9ef">LIKE</span> <span style="color:#e6db74">&#39;Rock%&#39;</span>;   <span style="color:#75715e">-- &#39;Rock&#39;으로 시작
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> albums <span style="color:#66d9ef">WHERE</span> Title <span style="color:#66d9ef">LIKE</span> <span style="color:#e6db74">&#39;%Live&#39;</span>;   <span style="color:#75715e">-- &#39;Live&#39;로 끝남
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> tracks <span style="color:#66d9ef">WHERE</span> Name <span style="color:#66d9ef">LIKE</span> <span style="color:#e6db74">&#39;%Love%&#39;</span>;   <span style="color:#75715e">-- 중간에 &#39;Love&#39; 포함
+</span></span></span></code></pre></div><hr>
+<h3 id="order-by">ORDER BY<a hidden class="anchor" aria-hidden="true" href="#order-by">#</a></h3>
+<p>결과를 정렬합니다. <code>ASC</code>(오름차순, 기본값) / <code>DESC</code>(내림차순).</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> Name, UnitPrice <span style="color:#66d9ef">FROM</span> tracks <span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> UnitPrice <span style="color:#66d9ef">DESC</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> Title <span style="color:#66d9ef">FROM</span> albums <span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> Title <span style="color:#66d9ef">ASC</span> <span style="color:#66d9ef">LIMIT</span> <span style="color:#ae81ff">10</span>;
+</span></span></code></pre></div><hr>
+<h2 id="-dml-data-manipulation-language--데이터-조작">✏️ DML (Data Manipulation Language) — 데이터 조작<a hidden class="anchor" aria-hidden="true" href="#-dml-data-manipulation-language--데이터-조작">#</a></h2>
+<h3 id="insert">INSERT<a hidden class="anchor" aria-hidden="true" href="#insert">#</a></h3>
+<p>테이블에 새 데이터를 추가합니다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> book (id, title, category, price, rating, stock)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">13</span>, <span style="color:#e6db74">&#39;It&#39;&#39;s Only the Himalayas&#39;</span>, <span style="color:#e6db74">&#39;Travel&#39;</span>, <span style="color:#ae81ff">45</span>.<span style="color:#ae81ff">17</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">19</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- 컬럼명 생략 시, 테이블 정의 순서대로 값이 들어감
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> book <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">14</span>, <span style="color:#e6db74">&#39;Set Me Free&#39;</span>, <span style="color:#e6db74">&#39;Young Adult&#39;</span>, <span style="color:#ae81ff">17</span>.<span style="color:#ae81ff">46</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">19</span>);
+</span></span></code></pre></div><hr>
+<h3 id="update">UPDATE<a hidden class="anchor" aria-hidden="true" href="#update">#</a></h3>
+<p>기존 데이터를 수정합니다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">UPDATE</span> book <span style="color:#66d9ef">SET</span> price <span style="color:#f92672">=</span> <span style="color:#ae81ff">39</span>.<span style="color:#ae81ff">99</span> <span style="color:#66d9ef">WHERE</span> title <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;Soumission&#39;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- 기존 값을 기준으로 연산도 가능
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">UPDATE</span> book <span style="color:#66d9ef">SET</span> stock <span style="color:#f92672">=</span> stock <span style="color:#f92672">+</span> <span style="color:#ae81ff">5</span> <span style="color:#66d9ef">WHERE</span> category <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;Poetry&#39;</span>;
+</span></span></code></pre></div><hr>
+<h3 id="delete">DELETE<a hidden class="anchor" aria-hidden="true" href="#delete">#</a></h3>
+<p>조건에 맞는 행을 삭제합니다.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">DELETE</span> <span style="color:#66d9ef">FROM</span> book <span style="color:#66d9ef">WHERE</span> rating <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">DELETE</span> <span style="color:#66d9ef">FROM</span> book <span style="color:#66d9ef">WHERE</span> stock <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">16</span>;
+</span></span></code></pre></div><hr>
+<h2 id="-중요-주의사항">⚠️ 중요 주의사항<a hidden class="anchor" aria-hidden="true" href="#-중요-주의사항">#</a></h2>
+<blockquote>
+<p><strong>UPDATE / DELETE 에서 WHERE를 빠뜨리면 테이블 전체가 수정·삭제됩니다!</strong></p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- 절대 금지 (실수로 전체 삭제됨)
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">DELETE</span> <span style="color:#66d9ef">FROM</span> book;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">UPDATE</span> book <span style="color:#66d9ef">SET</span> price <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span></code></pre></div><hr>
+<h2 id="-오늘-배운-것-한눈에-보기">🗂️ 오늘 배운 것 한눈에 보기<a hidden class="anchor" aria-hidden="true" href="#-오늘-배운-것-한눈에-보기">#</a></h2>
+<table>
+	<thead>
+			<tr>
+					<th>구분</th>
+					<th>키워드</th>
+					<th>용도</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>DQL</strong></td>
+					<td><code>SELECT</code></td>
+					<td>데이터 조회</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td><code>DISTINCT</code></td>
+					<td>중복 제거</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td><code>WHERE</code></td>
+					<td>조건 필터링</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td><code>AND / OR / NOT</code></td>
+					<td>복합 조건</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td><code>BETWEEN</code></td>
+					<td>범위 조건</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td><code>IN / NOT IN</code></td>
+					<td>목록 포함 여부</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td><code>LIKE</code></td>
+					<td>문자열 패턴 검색</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td><code>ORDER BY</code></td>
+					<td>정렬</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td><code>LIMIT</code></td>
+					<td>출력 건수 제한</td>
+			</tr>
+			<tr>
+					<td><strong>DML</strong></td>
+					<td><code>INSERT</code></td>
+					<td>행 추가</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td><code>UPDATE</code></td>
+					<td>행 수정</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td><code>DELETE</code></td>
+					<td>행 삭제</td>
+			</tr>
+	</tbody>
+</table>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="https://hseoooo.github.io/">Joys library</a></span> · 
+
+    
+    
+    <span>
+        Powered by
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var toplink = document.getElementById("top-link");
+    window.onscroll = function () {
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
+        } else {
+            toplink.classList.add("hidden");
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

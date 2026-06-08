@@ -6,8 +6,57 @@
     <description>Recent content in AI_Coding on Joys library</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 05 Jun 2026 17:30:00 +0900</lastBuildDate>
+    <lastBuildDate>Mon, 08 Jun 2026 22:20:00 +0900</lastBuildDate>
     <atom:link href="https://hseoooo.github.io/categories/ai_coding/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>0608 SQL 기본쿼리문</title>
+      <link>https://hseoooo.github.io/posts/sql_%EA%B8%B0%EB%B3%B8%EC%BF%BC%EB%A6%AC%EB%AC%B8-3790251fbd388020a86ec20933eb3a22/</link>
+      <pubDate>Mon, 08 Jun 2026 22:20:00 +0900</pubDate>
+      <guid>https://hseoooo.github.io/posts/sql_%EA%B8%B0%EB%B3%B8%EC%BF%BC%EB%A6%AC%EB%AC%B8-3790251fbd388020a86ec20933eb3a22/</guid>
+      <description>&lt;h1 id=&#34;sql_기본쿼리문&#34;&gt;SQL_기본쿼리문&lt;/h1&gt;
+&lt;h1 id=&#34;-오후-수업-요약--sql-기본-쿼리문&#34;&gt;🗄️ 오후 수업 요약 | SQL 기본 쿼리문&lt;/h1&gt;
+&lt;blockquote&gt;
+&lt;p&gt;날짜: 2026-06-08&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-dql-data-query-language--데이터-조회&#34;&gt;📖 DQL (Data Query Language) — 데이터 조회&lt;/h2&gt;
+&lt;h3 id=&#34;select&#34;&gt;SELECT&lt;/h3&gt;
+&lt;p&gt;테이블에서 원하는 컬럼을 가져옵니다.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; Title &lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; albums;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; tracks &lt;span style=&#34;color:#66d9ef&#34;&gt;LIMIT&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;;  &lt;span style=&#34;color:#75715e&#34;&gt;-- 전체 컬럼, 10건만
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h3 id=&#34;distinct&#34;&gt;DISTINCT&lt;/h3&gt;
+&lt;p&gt;중복된 값을 제거하고 고유한 값만 보여줍니다.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;DISTINCT&lt;/span&gt; Country &lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; customers;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h3 id=&#34;where--비교-연산자&#34;&gt;WHERE + 비교 연산자&lt;/h3&gt;
+&lt;p&gt;조건에 맞는 행만 필터링합니다. (&lt;code&gt;=&lt;/code&gt;, &lt;code&gt;&amp;gt;&lt;/code&gt;, &lt;code&gt;&amp;gt;=&lt;/code&gt;, &lt;code&gt;&amp;lt;&lt;/code&gt;, &lt;code&gt;&amp;lt;=&lt;/code&gt;, &lt;code&gt;!=&lt;/code&gt;)&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; customers &lt;span style=&#34;color:#66d9ef&#34;&gt;WHERE&lt;/span&gt; Country &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;USA&amp;#39;&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; tracks &lt;span style=&#34;color:#66d9ef&#34;&gt;WHERE&lt;/span&gt; UnitPrice &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;.&lt;span style=&#34;color:#ae81ff&#34;&gt;99&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;LIMIT&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h3 id=&#34;and--or--not&#34;&gt;AND / OR / NOT&lt;/h3&gt;
+&lt;p&gt;여러 조건을 조합합니다.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>0608 SQL 개발환경 설정</title>
+      <link>https://hseoooo.github.io/posts/sql_%EA%B0%9C%EB%B0%9C%ED%99%98%EA%B2%BD_%EC%84%A4%EC%A0%95-3790251fbd3880c1a58aee2bfa883fe6/</link>
+      <pubDate>Mon, 08 Jun 2026 22:00:00 +0900</pubDate>
+      <guid>https://hseoooo.github.io/posts/sql_%EA%B0%9C%EB%B0%9C%ED%99%98%EA%B2%BD_%EC%84%A4%EC%A0%95-3790251fbd3880c1a58aee2bfa883fe6/</guid>
+      <description>&lt;h1 id=&#34;sql_개발환경_설정&#34;&gt;SQL_개발환경_설정&lt;/h1&gt;
+&lt;h1 id=&#34;-오전-수업-요약--vs-code--sqlite-개발환경-설정&#34;&gt;📦 오전 수업 요약 | VS Code + SQLite 개발환경 설정&lt;/h1&gt;
+&lt;blockquote&gt;
+&lt;p&gt;날짜: 2026-06-08&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-핵심-개념-왜-connect를-하는-건가요&#34;&gt;🧠 핵심 개념: “왜 connect를 하는 건가요?”&lt;/h2&gt;
+&lt;p&gt;SQLite는 &lt;strong&gt;파일 하나가 곧 데이터베이스&lt;/strong&gt;입니다.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;mydb.db&lt;/code&gt; 같은 파일 안에 테이블, 데이터가 모두 저장됩니다.&lt;/p&gt;
+&lt;p&gt;VS Code는 코드 편집기일 뿐, 기본적으로 DB 파일을 읽거나 SQL을 실행할 수 없습니다.&lt;/p&gt;
+&lt;p&gt;그래서 &lt;strong&gt;SQLTools 확장&lt;/strong&gt;을 설치하고, “이 .db 파일을 열어서 SQL을 실행하겠다”는 &lt;strong&gt;연결(Connection)&lt;/strong&gt; 을 만들어야 합니다.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;내 컴퓨터 안에서 일어나는 일:
+  [VS Code] ──(SQLTools 확장)──▶ [mydb.db 파일] ──▶ 쿼리 실행 &amp;amp; 결과 출력
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;연결을 설정한다 = “VS Code야, 이 경로에 있는 .db 파일을 SQLite DB로 인식하고 쿼리 받아줘” 라고 알려주는 것.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>0605 생성형 AI 기초 </title>
       <link>https://hseoooo.github.io/posts/%EC%83%9D%EC%84%B1%ED%98%95_ai_%EA%B0%9C%EB%A1%A0_%EC%9A%94%EC%95%BD/</link>

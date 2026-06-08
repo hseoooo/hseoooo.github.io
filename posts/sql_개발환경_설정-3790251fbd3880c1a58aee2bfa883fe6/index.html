@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>0608 SQL 개발환경 설정 | Joys library</title>
+<meta name="keywords" content="">
+<meta name="description" content="SQL_개발환경_설정
+📦 오전 수업 요약 | VS Code &#43; SQLite 개발환경 설정
+
+날짜: 2026-06-08
+
+
+🧠 핵심 개념: “왜 connect를 하는 건가요?”
+SQLite는 파일 하나가 곧 데이터베이스입니다.
+mydb.db 같은 파일 안에 테이블, 데이터가 모두 저장됩니다.
+VS Code는 코드 편집기일 뿐, 기본적으로 DB 파일을 읽거나 SQL을 실행할 수 없습니다.
+그래서 SQLTools 확장을 설치하고, “이 .db 파일을 열어서 SQL을 실행하겠다”는 연결(Connection) 을 만들어야 합니다.
+내 컴퓨터 안에서 일어나는 일:
+  [VS Code] ──(SQLTools 확장)──▶ [mydb.db 파일] ──▶ 쿼리 실행 &amp; 결과 출력
+연결을 설정한다 = “VS Code야, 이 경로에 있는 .db 파일을 SQLite DB로 인식하고 쿼리 받아줘” 라고 알려주는 것.">
+<meta name="author" content="">
+<link rel="canonical" href="https://hseoooo.github.io/posts/sql_%EA%B0%9C%EB%B0%9C%ED%99%98%EA%B2%BD_%EC%84%A4%EC%A0%95-3790251fbd3880c1a58aee2bfa883fe6/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://hseoooo.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://hseoooo.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://hseoooo.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://hseoooo.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://hseoooo.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://hseoooo.github.io/posts/sql_%EA%B0%9C%EB%B0%9C%ED%99%98%EA%B2%BD_%EC%84%A4%EC%A0%95-3790251fbd3880c1a58aee2bfa883fe6/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="https://hseoooo.github.io/posts/sql_%EA%B0%9C%EB%B0%9C%ED%99%98%EA%B2%BD_%EC%84%A4%EC%A0%95-3790251fbd3880c1a58aee2bfa883fe6/">
+  <meta property="og:site_name" content="Joys library">
+  <meta property="og:title" content="0608 SQL 개발환경 설정">
+  <meta property="og:description" content="SQL_개발환경_설정 📦 오전 수업 요약 | VS Code &#43; SQLite 개발환경 설정 날짜: 2026-06-08
+🧠 핵심 개념: “왜 connect를 하는 건가요?” SQLite는 파일 하나가 곧 데이터베이스입니다.
+mydb.db 같은 파일 안에 테이블, 데이터가 모두 저장됩니다.
+VS Code는 코드 편집기일 뿐, 기본적으로 DB 파일을 읽거나 SQL을 실행할 수 없습니다.
+그래서 SQLTools 확장을 설치하고, “이 .db 파일을 열어서 SQL을 실행하겠다”는 연결(Connection) 을 만들어야 합니다.
+내 컴퓨터 안에서 일어나는 일: [VS Code] ──(SQLTools 확장)──▶ [mydb.db 파일] ──▶ 쿼리 실행 &amp; 결과 출력 연결을 설정한다 = “VS Code야, 이 경로에 있는 .db 파일을 SQLite DB로 인식하고 쿼리 받아줘” 라고 알려주는 것.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2026-06-08T22:00:00+09:00">
+    <meta property="article:modified_time" content="2026-06-08T22:00:00+09:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="0608 SQL 개발환경 설정">
+  <meta name="twitter:description" content="SQL_개발환경_설정 📦 오전 수업 요약 | VS Code &#43; SQLite 개발환경 설정 날짜: 2026-06-08
+🧠 핵심 개념: “왜 connect를 하는 건가요?” SQLite는 파일 하나가 곧 데이터베이스입니다.
+mydb.db 같은 파일 안에 테이블, 데이터가 모두 저장됩니다.
+VS Code는 코드 편집기일 뿐, 기본적으로 DB 파일을 읽거나 SQL을 실행할 수 없습니다.
+그래서 SQLTools 확장을 설치하고, “이 .db 파일을 열어서 SQL을 실행하겠다”는 연결(Connection) 을 만들어야 합니다.
+내 컴퓨터 안에서 일어나는 일: [VS Code] ──(SQLTools 확장)──▶ [mydb.db 파일] ──▶ 쿼리 실행 &amp; 결과 출력 연결을 설정한다 = “VS Code야, 이 경로에 있는 .db 파일을 SQLite DB로 인식하고 쿼리 받아줘” 라고 알려주는 것.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://hseoooo.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "0608 SQL 개발환경 설정",
+      "item": "https://hseoooo.github.io/posts/sql_%EA%B0%9C%EB%B0%9C%ED%99%98%EA%B2%BD_%EC%84%A4%EC%A0%95-3790251fbd3880c1a58aee2bfa883fe6/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "0608 SQL 개발환경 설정",
+  "name": "0608 SQL 개발환경 설정",
+  "description": "SQL_개발환경_설정 📦 오전 수업 요약 | VS Code + SQLite 개발환경 설정 날짜: 2026-06-08\n🧠 핵심 개념: “왜 connect를 하는 건가요?” SQLite는 파일 하나가 곧 데이터베이스입니다.\nmydb.db 같은 파일 안에 테이블, 데이터가 모두 저장됩니다.\nVS Code는 코드 편집기일 뿐, 기본적으로 DB 파일을 읽거나 SQL을 실행할 수 없습니다.\n그래서 SQLTools 확장을 설치하고, “이 .db 파일을 열어서 SQL을 실행하겠다”는 연결(Connection) 을 만들어야 합니다.\n내 컴퓨터 안에서 일어나는 일: [VS Code] ──(SQLTools 확장)──▶ [mydb.db 파일] ──▶ 쿼리 실행 \u0026amp; 결과 출력 연결을 설정한다 = “VS Code야, 이 경로에 있는 .db 파일을 SQLite DB로 인식하고 쿼리 받아줘” 라고 알려주는 것.\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "SQL_개발환경_설정 📦 오전 수업 요약 | VS Code + SQLite 개발환경 설정 날짜: 2026-06-08\n🧠 핵심 개념: “왜 connect를 하는 건가요?” SQLite는 파일 하나가 곧 데이터베이스입니다.\nmydb.db 같은 파일 안에 테이블, 데이터가 모두 저장됩니다.\nVS Code는 코드 편집기일 뿐, 기본적으로 DB 파일을 읽거나 SQL을 실행할 수 없습니다.\n그래서 SQLTools 확장을 설치하고, “이 .db 파일을 열어서 SQL을 실행하겠다”는 연결(Connection) 을 만들어야 합니다.\n내 컴퓨터 안에서 일어나는 일: [VS Code] ──(SQLTools 확장)──▶ [mydb.db 파일] ──▶ 쿼리 실행 \u0026 결과 출력 연결을 설정한다 = “VS Code야, 이 경로에 있는 .db 파일을 SQLite DB로 인식하고 쿼리 받아줘” 라고 알려주는 것.\n✅ 오늘의 목표 (1차 관문) VS Code에서 제공 코드 실행 시 결과값 정상 출력 SQLite 연결 테스트에서 “Successfully connected” 메시지 확인 🔧 설치 및 설정 순서 1단계 | VS Code 확장(Extension) 설치 Ctrl + Shift + X → 아래 3개 검색 후 설치\n확장명 역할 SQLTools SQL 실행 및 커넥션 관리 SQLTools SQLite SQLTools의 SQLite 드라이버 SQLite Viewer .db 파일을 시각적으로 확인 2단계 | Node.js 설치 (Windows만) 일부 PC에서 SQLTools 활성화 오류 방지용.\nNode.js 공식 사이트에서 설치 설치 중 Add to PATH 체크 ✅ 설치 후 재부팅 VS Code 터미널에서 확인: node -v npm -v # 버전 숫자가 출력되면 성공 3단계 | 작업 폴더 및 DB 파일 생성 C:\\test_gongyu_0608\\ ← VS Code에서 Open Folder로 열기 └── mydb.db ← 새 파일 생성 (내용 비어도 됨) 터미널에서 pwd 입력 → 현재 경로 확인 (커넥션 설정 시 필요)\n4단계 | SQLTools 커넥션 생성 좌측 SQLTools 패널 → Add New Connection 타입: SQLite 선택 Connection Name: 원하는 이름 (예: mydb.db) Database File 경로 입력 (/Users/()/Desktop/yeardreamschool6th/mydb.db) Windows: 역슬래시 \\\\ 사용 주의 Mac: 슬래시 / 사용 Test Connection → \"Successfully connected\" 확인 Save → Connect Now 5단계 | 단축키 설정 Ctrl + K → Ctrl + S (Mac: Cmd + K → Cmd + S)\n→ 검색: SQLTools\n→ Run Selected Query 단축키를 Ctrl + Enter 로 변경\n6단계 | 레이아웃 설정 View → Editor Layout → Two Rows\n→ SQL 쿼리(위) + 결과창(아래) 배치로 실습 편의성 향상\n⚠️ 자주 발생하는 오류 증상 해결 방법 “파일이 없다” / 경로 요구 .db 파일명 오타, 슬래시 방향 확인 “Install / Enable / Reload” 메시지 순서대로 클릭: Install Now → Enable → Reload Now 확장이 활성화 안 됨 (Windows) Node.js 설치 후 재부팅 📌 오늘의 미션 datasense/ └── something.db ← 임의의 DB 파일 생성 아래 SQL 최소 구성으로 작성 및 실행:\n-- 1) 테이블 생성 -- 2) 데이터 삽입 -- 3) 조회 ⚠️ ChatGPT 사용 시 “순수 SQLite 쿼리문만, 파이썬 코드 제외” 로 요청할 것!\n",
+  "wordCount" : "412",
+  "inLanguage": "en",
+  "datePublished": "2026-06-08T22:00:00+09:00",
+  "dateModified": "2026-06-08T22:00:00+09:00",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://hseoooo.github.io/posts/sql_%EA%B0%9C%EB%B0%9C%ED%99%98%EA%B2%BD_%EC%84%A4%EC%A0%95-3790251fbd3880c1a58aee2bfa883fe6/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Joys library",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://hseoooo.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="header-nav">
+        <div class="logo">
+            <a href="https://hseoooo.github.io/" accesskey="h" title="Joys library (Alt + H)">Joys library</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu" class="menu">
+            <li>
+                <a href="https://hseoooo.github.io/categories/ai_coding/" title="AI/개발">
+                    <span>AI/개발</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://hseoooo.github.io/categories/market-analysis/" title="시장 분석">
+                    <span>시장 분석</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      0608 SQL 개발환경 설정
+    </h1>
+    <div class="post-meta">
+
+<span title='2026-06-08 22:00:00 +0900 KST'>June 8, 2026</span>
+
+</div>
+  </header> 
+  <div class="post-content md-content"><h1 id="sql_개발환경_설정">SQL_개발환경_설정<a hidden class="anchor" aria-hidden="true" href="#sql_개발환경_설정">#</a></h1>
+<h1 id="-오전-수업-요약--vs-code--sqlite-개발환경-설정">📦 오전 수업 요약 | VS Code + SQLite 개발환경 설정<a hidden class="anchor" aria-hidden="true" href="#-오전-수업-요약--vs-code--sqlite-개발환경-설정">#</a></h1>
+<blockquote>
+<p>날짜: 2026-06-08</p>
+</blockquote>
+<hr>
+<h2 id="-핵심-개념-왜-connect를-하는-건가요">🧠 핵심 개념: “왜 connect를 하는 건가요?”<a hidden class="anchor" aria-hidden="true" href="#-핵심-개념-왜-connect를-하는-건가요">#</a></h2>
+<p>SQLite는 <strong>파일 하나가 곧 데이터베이스</strong>입니다.</p>
+<p><code>mydb.db</code> 같은 파일 안에 테이블, 데이터가 모두 저장됩니다.</p>
+<p>VS Code는 코드 편집기일 뿐, 기본적으로 DB 파일을 읽거나 SQL을 실행할 수 없습니다.</p>
+<p>그래서 <strong>SQLTools 확장</strong>을 설치하고, “이 .db 파일을 열어서 SQL을 실행하겠다”는 <strong>연결(Connection)</strong> 을 만들어야 합니다.</p>
+<pre tabindex="0"><code>내 컴퓨터 안에서 일어나는 일:
+  [VS Code] ──(SQLTools 확장)──▶ [mydb.db 파일] ──▶ 쿼리 실행 &amp; 결과 출력
+</code></pre><p>연결을 설정한다 = “VS Code야, 이 경로에 있는 .db 파일을 SQLite DB로 인식하고 쿼리 받아줘” 라고 알려주는 것.</p>
+<hr>
+<h2 id="-오늘의-목표-1차-관문">✅ 오늘의 목표 (1차 관문)<a hidden class="anchor" aria-hidden="true" href="#-오늘의-목표-1차-관문">#</a></h2>
+<ul>
+<li><input disabled="" type="checkbox"> VS Code에서 제공 코드 실행 시 <strong>결과값 정상 출력</strong></li>
+<li><input disabled="" type="checkbox"> SQLite 연결 테스트에서 <strong>“Successfully connected”</strong> 메시지 확인</li>
+</ul>
+<hr>
+<h2 id="-설치-및-설정-순서">🔧 설치 및 설정 순서<a hidden class="anchor" aria-hidden="true" href="#-설치-및-설정-순서">#</a></h2>
+<h3 id="1단계--vs-code-확장extension-설치">1단계 | VS Code 확장(Extension) 설치<a hidden class="anchor" aria-hidden="true" href="#1단계--vs-code-확장extension-설치">#</a></h3>
+<p><code>Ctrl + Shift + X</code> → 아래 3개 검색 후 설치</p>
+<table>
+	<thead>
+			<tr>
+					<th>확장명</th>
+					<th>역할</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>SQLTools</strong></td>
+					<td>SQL 실행 및 커넥션 관리</td>
+			</tr>
+			<tr>
+					<td><strong>SQLTools SQLite</strong></td>
+					<td>SQLTools의 SQLite 드라이버</td>
+			</tr>
+			<tr>
+					<td><strong>SQLite Viewer</strong></td>
+					<td>.db 파일을 시각적으로 확인</td>
+			</tr>
+	</tbody>
+</table>
+<hr>
+<h3 id="2단계--nodejs-설치-windows만">2단계 | Node.js 설치 (Windows만)<a hidden class="anchor" aria-hidden="true" href="#2단계--nodejs-설치-windows만">#</a></h3>
+<p>일부 PC에서 SQLTools 활성화 오류 방지용.</p>
+<ol>
+<li>Node.js 공식 사이트에서 설치</li>
+<li>설치 중 <strong>Add to PATH</strong> 체크 ✅</li>
+<li>설치 후 <strong>재부팅</strong></li>
+<li>VS Code 터미널에서 확인:</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>node -v
+</span></span><span style="display:flex;"><span>npm -v
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 버전 숫자가 출력되면 성공</span>
+</span></span></code></pre></div><hr>
+<h3 id="3단계--작업-폴더-및-db-파일-생성">3단계 | 작업 폴더 및 DB 파일 생성<a hidden class="anchor" aria-hidden="true" href="#3단계--작업-폴더-및-db-파일-생성">#</a></h3>
+<pre tabindex="0"><code>C:\test_gongyu_0608\       ← VS Code에서 Open Folder로 열기
+    └── mydb.db            ← 새 파일 생성 (내용 비어도 됨)
+</code></pre><blockquote>
+<p>터미널에서 <code>pwd</code> 입력 → 현재 경로 확인 (커넥션 설정 시 필요)</p>
+</blockquote>
+<hr>
+<h3 id="4단계--sqltools-커넥션-생성">4단계 | SQLTools 커넥션 생성<a hidden class="anchor" aria-hidden="true" href="#4단계--sqltools-커넥션-생성">#</a></h3>
+<ol>
+<li>좌측 SQLTools 패널 → <strong>Add New Connection</strong></li>
+<li>타입: <code>SQLite</code> 선택</li>
+<li>Connection Name: 원하는 이름 (예: mydb.db)</li>
+<li>Database File 경로 입력 (/Users/()/Desktop/yeardreamschool6th/mydb.db)
+<ul>
+<li>Windows: 역슬래시 <code>\\</code> 사용 주의</li>
+<li>Mac: 슬래시 <code>/</code> 사용</li>
+</ul>
+</li>
+<li><strong>Test Connection</strong> → <code>&quot;Successfully connected&quot;</code> 확인</li>
+<li><strong>Save → Connect Now</strong></li>
+</ol>
+<hr>
+<h3 id="5단계--단축키-설정">5단계 | 단축키 설정<a hidden class="anchor" aria-hidden="true" href="#5단계--단축키-설정">#</a></h3>
+<p><code>Ctrl + K</code> → <code>Ctrl + S</code> (Mac: <code>Cmd + K</code> → <code>Cmd + S</code>)</p>
+<p>→ 검색: <code>SQLTools</code></p>
+<p>→ <strong>Run Selected Query</strong> 단축키를 <code>Ctrl + Enter</code> 로 변경</p>
+<hr>
+<h3 id="6단계--레이아웃-설정">6단계 | 레이아웃 설정<a hidden class="anchor" aria-hidden="true" href="#6단계--레이아웃-설정">#</a></h3>
+<p><code>View → Editor Layout → Two Rows</code></p>
+<p>→ SQL 쿼리(위) + 결과창(아래) 배치로 실습 편의성 향상</p>
+<hr>
+<h2 id="-자주-발생하는-오류">⚠️ 자주 발생하는 오류<a hidden class="anchor" aria-hidden="true" href="#-자주-발생하는-오류">#</a></h2>
+<table>
+	<thead>
+			<tr>
+					<th>증상</th>
+					<th>해결 방법</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>“파일이 없다” / 경로 요구</td>
+					<td><code>.db</code> 파일명 오타, 슬래시 방향 확인</td>
+			</tr>
+			<tr>
+					<td>“Install / Enable / Reload” 메시지</td>
+					<td>순서대로 클릭: Install Now → Enable → Reload Now</td>
+			</tr>
+			<tr>
+					<td>확장이 활성화 안 됨 (Windows)</td>
+					<td>Node.js 설치 후 재부팅</td>
+			</tr>
+	</tbody>
+</table>
+<hr>
+<h2 id="-오늘의-미션">📌 오늘의 미션<a hidden class="anchor" aria-hidden="true" href="#-오늘의-미션">#</a></h2>
+<pre tabindex="0"><code>datasense/
+    └── something.db       ← 임의의 DB 파일 생성
+</code></pre><p>아래 SQL 최소 구성으로 작성 및 실행:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- 1) 테이블 생성
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- 2) 데이터 삽입
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- 3) 조회
+</span></span></span></code></pre></div><blockquote>
+<p>⚠️ ChatGPT 사용 시 <strong>“순수 SQLite 쿼리문만, 파이썬 코드 제외”</strong> 로 요청할 것!</p>
+</blockquote>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="https://hseoooo.github.io/">Joys library</a></span> · 
+
+    
+    
+    <span>
+        Powered by
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var toplink = document.getElementById("top-link");
+    window.onscroll = function () {
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
+        } else {
+            toplink.classList.add("hidden");
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>
