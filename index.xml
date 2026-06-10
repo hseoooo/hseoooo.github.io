@@ -6,8 +6,118 @@
     <description>Recent content on Joys library</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 08 Jun 2026 22:20:00 +0900</lastBuildDate>
+    <lastBuildDate>Wed, 10 Jun 2026 22:20:00 +0900</lastBuildDate>
     <atom:link href="https://hseoooo.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>0610 SQL 다수 테이블 제어 및 서브쿼리</title>
+      <link>https://hseoooo.github.io/posts/%EC%98%A4%EC%A0%84_%EB%8B%A4%EC%88%98%ED%85%8C%EC%9D%B4%EB%B8%94_%EC%84%9C%EB%B8%8C%EC%BF%BC%EB%A6%AC-37b0251fbd38812181e9cf934e62f45b/</link>
+      <pubDate>Wed, 10 Jun 2026 22:20:00 +0900</pubDate>
+      <guid>https://hseoooo.github.io/posts/%EC%98%A4%EC%A0%84_%EB%8B%A4%EC%88%98%ED%85%8C%EC%9D%B4%EB%B8%94_%EC%84%9C%EB%B8%8C%EC%BF%BC%EB%A6%AC-37b0251fbd38812181e9cf934e62f45b/</guid>
+      <description>&lt;h1 id=&#34;-오전-수업-요약--다수의-테이블-제어--서브쿼리&#34;&gt;🗄️ 오전 수업 요약 | 다수의 테이블 제어 + 서브쿼리&lt;/h1&gt;
+&lt;blockquote&gt;
+&lt;p&gt;날짜: 2026-06-10&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;part-1-다수의-테이블-제어&#34;&gt;PART 1. 다수의 테이블 제어&lt;/h2&gt;
+&lt;h3 id=&#34;group-by--데이터-그룹-짓기&#34;&gt;GROUP BY — 데이터 그룹 짓기&lt;/h3&gt;
+&lt;p&gt;여러 행을 특정 컬럼 기준으로 묶어 집계합니다. &lt;code&gt;COUNT&lt;/code&gt;, &lt;code&gt;SUM&lt;/code&gt;, &lt;code&gt;AVG&lt;/code&gt; 등과 함께 사용합니다.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- 국가별 고객 수 (많은 순)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; Country, &lt;span style=&#34;color:#66d9ef&#34;&gt;COUNT&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; customer_cnt
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; customers
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;GROUP&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;BY&lt;/span&gt; Country
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;ORDER&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;BY&lt;/span&gt; customer_cnt &lt;span style=&#34;color:#66d9ef&#34;&gt;DESC&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h3 id=&#34;having--그룹에-조건-적용&#34;&gt;HAVING — 그룹에 조건 적용&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;WHERE&lt;/code&gt;는 집계 &lt;strong&gt;전&lt;/strong&gt; 개별 행을 필터링하고, &lt;code&gt;HAVING&lt;/code&gt;은 집계 &lt;strong&gt;후&lt;/strong&gt; 그룹을 필터링합니다.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- 앨범이 5개 이상인 아티스트만
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; ArtistId, &lt;span style=&#34;color:#66d9ef&#34;&gt;COUNT&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; album_cnt
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; albums
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;GROUP&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;BY&lt;/span&gt; ArtistId
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;HAVING&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;COUNT&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;WHERE COUNT(*) &amp;gt;= 5&lt;/code&gt; 는 오류 — 집계 결과에는 반드시 &lt;code&gt;HAVING&lt;/code&gt; 사용&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>0610 SQL 심화 (집계 함수, 집합 연산자, 계층형)</title>
+      <link>https://hseoooo.github.io/posts/%EC%98%A4%ED%9B%84_sql%EC%8B%AC%ED%99%94_%EC%A7%91%ED%95%A9%EC%97%B0%EC%82%B0%EC%9E%90_%EA%B3%84%EC%B8%B5%ED%98%95-37b0251fbd3881dd8622d72fe38c5ab6/</link>
+      <pubDate>Mon, 08 Jun 2026 23:20:00 +0900</pubDate>
+      <guid>https://hseoooo.github.io/posts/%EC%98%A4%ED%9B%84_sql%EC%8B%AC%ED%99%94_%EC%A7%91%ED%95%A9%EC%97%B0%EC%82%B0%EC%9E%90_%EA%B3%84%EC%B8%B5%ED%98%95-37b0251fbd3881dd8622d72fe38c5ab6/</guid>
+      <description>&lt;h1 id=&#34;-오후-수업-요약--sql-심화--집계-함수--서브쿼리-심화--집합-연산자--계층형-질의&#34;&gt;🗄️ 오후 수업 요약 | SQL 심화 — 집계 함수 / 서브쿼리 심화 / 집합 연산자 / 계층형 질의&lt;/h1&gt;
+&lt;blockquote&gt;
+&lt;p&gt;날짜: 2026-06-10&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;part-1-집계-함수-aggregate-functions&#34;&gt;PART 1. 집계 함수 (Aggregate Functions)&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;개념:&lt;/strong&gt; 여러 행(row)을 입력받아 &lt;strong&gt;단일 값 하나&lt;/strong&gt;를 반환하는 함수.
+&lt;code&gt;GROUP BY&lt;/code&gt;, &lt;code&gt;HAVING&lt;/code&gt;과 함께 쓰는 것이 핵심 패턴.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;count--행-수-세기&#34;&gt;COUNT — 행 수 세기&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- 앨범별 트랙 수 (많은 순)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- 생각 흐름: &amp;#34;앨범마다 트랙이 몇 개씩?&amp;#34; → AlbumId로 묶고 → TrackId 개수 셈
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; AlbumId, &lt;span style=&#34;color:#66d9ef&#34;&gt;COUNT&lt;/span&gt;(TrackId) &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; track_count
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; tracks
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;GROUP&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;BY&lt;/span&gt; AlbumId
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;ORDER&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;BY&lt;/span&gt; track_count &lt;span style=&#34;color:#66d9ef&#34;&gt;DESC&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- DISTINCT 조합: 실제로 구매한 고유 고객 수
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- 생각 흐름: 같은 고객이 여러 번 구매해도 1명으로 세야 함 → DISTINCT 필요
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;COUNT&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;DISTINCT&lt;/span&gt; CustomerId) &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;구매고객수&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; invoices;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h3 id=&#34;sum--합계&#34;&gt;SUM — 합계&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- 연도별 총 매출
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- 생각 흐름: InvoiceDate에서 연도만 뽑아 → 그걸로 묶고 → Total 합산
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; strftime(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;%Y&amp;#39;&lt;/span&gt;, InvoiceDate) &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;연도&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;       ROUND(&lt;span style=&#34;color:#66d9ef&#34;&gt;SUM&lt;/span&gt;(Total), &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;)        &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;연매출&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; invoices
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;GROUP&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;BY&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;연도&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;ORDER&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;BY&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;연도&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- strftime(&amp;#39;%Y&amp;#39;, 날짜컬럼) : 날짜에서 연도(4자리)만 추출하는 SQLite 함수
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h3 id=&#34;avg--평균&#34;&gt;AVG — 평균&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- 고객 1인당 평균 청구 금액
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- 생각 흐름: invoices 테이블의 Total 전체 평균 → 단순 AVG 한 번으로 끝
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; ROUND(&lt;span style=&#34;color:#66d9ef&#34;&gt;AVG&lt;/span&gt;(Total), &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;평균청구금액&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; invoices;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h3 id=&#34;max--min--최댓값--최솟값&#34;&gt;MAX / MIN — 최댓값 / 최솟값&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- 고객별 최대·최소·평균 청구 금액 한 번에
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- 생각 흐름: 고객마다 여러 청구서가 있음 → CustomerId로 묶고 → 세 값 동시 계산
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; CustomerId,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;       ROUND(&lt;span style=&#34;color:#66d9ef&#34;&gt;MAX&lt;/span&gt;(Total), &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;최대청구&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;       ROUND(&lt;span style=&#34;color:#66d9ef&#34;&gt;MIN&lt;/span&gt;(Total), &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;최소청구&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;       ROUND(&lt;span style=&#34;color:#66d9ef&#34;&gt;AVG&lt;/span&gt;(Total), &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;평균청구&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; invoices
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;GROUP&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;BY&lt;/span&gt; CustomerId
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;ORDER&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;BY&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;최대청구&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;DESC&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h3 id=&#34;group_concat--문자열-연결&#34;&gt;GROUP_CONCAT — 문자열 연결&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- 앨범 1번의 트랙 이름들을 &amp;#39; / &amp;#39; 구분자로 한 줄에 연결
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- 생각 흐름: 여러 행의 문자열 값을 하나로 합치고 싶을 때 사용
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; GROUP_CONCAT(Name, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39; / &amp;#39;&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;트랙목록&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; tracks
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;WHERE&lt;/span&gt; AlbumId &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- 결과 예: &amp;#34;For Those About To Rock / Put The Finger On You / ...&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h3 id=&#34;having--집계-후-그룹-필터링&#34;&gt;HAVING — 집계 후 그룹 필터링&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- WHERE vs HAVING 비교
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- WHERE  : 집계 이전, 개별 행 단위 필터 (집계함수 사용 불가)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- HAVING : 집계 이후, 그룹 단위 필터  (집계함수 사용 가능)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- 총 매출이 $40 이상인 고객
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- 생각 흐름: 먼저 고객별로 묶어 SUM → 그 결과에 조건 적용 → HAVING 필요
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; CustomerId, ROUND(&lt;span style=&#34;color:#66d9ef&#34;&gt;SUM&lt;/span&gt;(Total), &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;총매출&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; invoices
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;GROUP&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;BY&lt;/span&gt; CustomerId
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;HAVING&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;총매출&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;40&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;ORDER&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;BY&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;총매출&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;DESC&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h2 id=&#34;part-2-서브쿼리-심화&#34;&gt;PART 2. 서브쿼리 심화&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;복습:&lt;/strong&gt; 서브쿼리 = SQL 안에 또 다른 SELECT.
+위치에 따라 역할이 달라집니다.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>0608 SQL 기본쿼리문</title>
       <link>https://hseoooo.github.io/posts/sql_%EA%B8%B0%EB%B3%B8%EC%BF%BC%EB%A6%AC%EB%AC%B8-3790251fbd388020a86ec20933eb3a22/</link>

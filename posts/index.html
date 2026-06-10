@@ -141,6 +141,41 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">0610 SQL 다수 테이블 제어 및 서브쿼리
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>🗄️ 오전 수업 요약 | 다수의 테이블 제어 &#43; 서브쿼리 날짜: 2026-06-10
+PART 1. 다수의 테이블 제어 GROUP BY — 데이터 그룹 짓기 여러 행을 특정 컬럼 기준으로 묶어 집계합니다. COUNT, SUM, AVG 등과 함께 사용합니다.
+-- 국가별 고객 수 (많은 순) SELECT Country, COUNT(*) AS customer_cnt FROM customers GROUP BY Country ORDER BY customer_cnt DESC; HAVING — 그룹에 조건 적용 WHERE는 집계 전 개별 행을 필터링하고, HAVING은 집계 후 그룹을 필터링합니다.
+-- 앨범이 5개 이상인 아티스트만 SELECT ArtistId, COUNT(*) AS album_cnt FROM albums GROUP BY ArtistId HAVING COUNT(*) &gt;= 5; WHERE COUNT(*) &gt;= 5 는 오류 — 집계 결과에는 반드시 HAVING 사용
+...</p>
+  </div>
+  <footer class="entry-footer">
+
+<span title='2026-06-10 22:20:00 +0900 KST'>June 10, 2026</span></footer>
+  <a class="entry-link" aria-label="post link to 0610 SQL 다수 테이블 제어 및 서브쿼리" href="https://hseoooo.github.io/posts/%EC%98%A4%EC%A0%84_%EB%8B%A4%EC%88%98%ED%85%8C%EC%9D%B4%EB%B8%94_%EC%84%9C%EB%B8%8C%EC%BF%BC%EB%A6%AC-37b0251fbd38812181e9cf934e62f45b/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">0610 SQL 심화 (집계 함수, 집합 연산자, 계층형)
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>🗄️ 오후 수업 요약 | SQL 심화 — 집계 함수 / 서브쿼리 심화 / 집합 연산자 / 계층형 질의 날짜: 2026-06-10
+PART 1. 집계 함수 (Aggregate Functions) 개념: 여러 행(row)을 입력받아 단일 값 하나를 반환하는 함수. GROUP BY, HAVING과 함께 쓰는 것이 핵심 패턴.
+COUNT — 행 수 세기 -- 앨범별 트랙 수 (많은 순) -- 생각 흐름: &#34;앨범마다 트랙이 몇 개씩?&#34; → AlbumId로 묶고 → TrackId 개수 셈 SELECT AlbumId, COUNT(TrackId) AS track_count FROM tracks GROUP BY AlbumId ORDER BY track_count DESC; -- DISTINCT 조합: 실제로 구매한 고유 고객 수 -- 생각 흐름: 같은 고객이 여러 번 구매해도 1명으로 세야 함 → DISTINCT 필요 SELECT COUNT(DISTINCT CustomerId) AS 구매고객수 FROM invoices; SUM — 합계 -- 연도별 총 매출 -- 생각 흐름: InvoiceDate에서 연도만 뽑아 → 그걸로 묶고 → Total 합산 SELECT strftime(&#39;%Y&#39;, InvoiceDate) AS 연도, ROUND(SUM(Total), 2) AS 연매출 FROM invoices GROUP BY 연도 ORDER BY 연도; -- strftime(&#39;%Y&#39;, 날짜컬럼) : 날짜에서 연도(4자리)만 추출하는 SQLite 함수 AVG — 평균 -- 고객 1인당 평균 청구 금액 -- 생각 흐름: invoices 테이블의 Total 전체 평균 → 단순 AVG 한 번으로 끝 SELECT ROUND(AVG(Total), 2) AS 평균청구금액 FROM invoices; MAX / MIN — 최댓값 / 최솟값 -- 고객별 최대·최소·평균 청구 금액 한 번에 -- 생각 흐름: 고객마다 여러 청구서가 있음 → CustomerId로 묶고 → 세 값 동시 계산 SELECT CustomerId, ROUND(MAX(Total), 2) AS 최대청구, ROUND(MIN(Total), 2) AS 최소청구, ROUND(AVG(Total), 2) AS 평균청구 FROM invoices GROUP BY CustomerId ORDER BY 최대청구 DESC; GROUP_CONCAT — 문자열 연결 -- 앨범 1번의 트랙 이름들을 &#39; / &#39; 구분자로 한 줄에 연결 -- 생각 흐름: 여러 행의 문자열 값을 하나로 합치고 싶을 때 사용 SELECT GROUP_CONCAT(Name, &#39; / &#39;) AS 트랙목록 FROM tracks WHERE AlbumId = 1; -- 결과 예: &#34;For Those About To Rock / Put The Finger On You / ...&#34; HAVING — 집계 후 그룹 필터링 -- WHERE vs HAVING 비교 -- WHERE : 집계 이전, 개별 행 단위 필터 (집계함수 사용 불가) -- HAVING : 집계 이후, 그룹 단위 필터 (집계함수 사용 가능) -- 총 매출이 $40 이상인 고객 -- 생각 흐름: 먼저 고객별로 묶어 SUM → 그 결과에 조건 적용 → HAVING 필요 SELECT CustomerId, ROUND(SUM(Total), 2) AS 총매출 FROM invoices GROUP BY CustomerId HAVING 총매출 &gt;= 40 ORDER BY 총매출 DESC; PART 2. 서브쿼리 심화 복습: 서브쿼리 = SQL 안에 또 다른 SELECT. 위치에 따라 역할이 달라집니다.
+...</p>
+  </div>
+  <footer class="entry-footer">
+
+<span title='2026-06-08 23:20:00 +0900 KST'>June 8, 2026</span></footer>
+  <a class="entry-link" aria-label="post link to 0610 SQL 심화 (집계 함수, 집합 연산자, 계층형)" href="https://hseoooo.github.io/posts/%EC%98%A4%ED%9B%84_sql%EC%8B%AC%ED%99%94_%EC%A7%91%ED%95%A9%EC%97%B0%EC%82%B0%EC%9E%90_%EA%B3%84%EC%B8%B5%ED%98%95-37b0251fbd3881dd8622d72fe38c5ab6/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">0608 SQL 기본쿼리문
     </h2>
   </header>

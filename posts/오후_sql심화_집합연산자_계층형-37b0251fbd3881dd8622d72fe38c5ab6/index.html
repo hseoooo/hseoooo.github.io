@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>0610 SQL 심화 (집계 함수, 집합 연산자, 계층형) | Joys library</title>
+<meta name="keywords" content="">
+<meta name="description" content="🗄️ 오후 수업 요약 | SQL 심화 — 집계 함수 / 서브쿼리 심화 / 집합 연산자 / 계층형 질의
+
+날짜: 2026-06-10
+
+
+PART 1. 집계 함수 (Aggregate Functions)
+
+개념: 여러 행(row)을 입력받아 단일 값 하나를 반환하는 함수.
+GROUP BY, HAVING과 함께 쓰는 것이 핵심 패턴.
+
+
+COUNT — 행 수 세기
+-- 앨범별 트랙 수 (많은 순)
+-- 생각 흐름: &#34;앨범마다 트랙이 몇 개씩?&#34; → AlbumId로 묶고 → TrackId 개수 셈
+SELECT AlbumId, COUNT(TrackId) AS track_count
+FROM tracks
+GROUP BY AlbumId
+ORDER BY track_count DESC;
+-- DISTINCT 조합: 실제로 구매한 고유 고객 수
+-- 생각 흐름: 같은 고객이 여러 번 구매해도 1명으로 세야 함 → DISTINCT 필요
+SELECT COUNT(DISTINCT CustomerId) AS 구매고객수
+FROM invoices;
+
+SUM — 합계
+-- 연도별 총 매출
+-- 생각 흐름: InvoiceDate에서 연도만 뽑아 → 그걸로 묶고 → Total 합산
+SELECT strftime(&#39;%Y&#39;, InvoiceDate) AS 연도,
+       ROUND(SUM(Total), 2)        AS 연매출
+FROM invoices
+GROUP BY 연도
+ORDER BY 연도;
+-- strftime(&#39;%Y&#39;, 날짜컬럼) : 날짜에서 연도(4자리)만 추출하는 SQLite 함수
+
+AVG — 평균
+-- 고객 1인당 평균 청구 금액
+-- 생각 흐름: invoices 테이블의 Total 전체 평균 → 단순 AVG 한 번으로 끝
+SELECT ROUND(AVG(Total), 2) AS 평균청구금액
+FROM invoices;
+
+MAX / MIN — 최댓값 / 최솟값
+-- 고객별 최대·최소·평균 청구 금액 한 번에
+-- 생각 흐름: 고객마다 여러 청구서가 있음 → CustomerId로 묶고 → 세 값 동시 계산
+SELECT CustomerId,
+       ROUND(MAX(Total), 2) AS 최대청구,
+       ROUND(MIN(Total), 2) AS 최소청구,
+       ROUND(AVG(Total), 2) AS 평균청구
+FROM invoices
+GROUP BY CustomerId
+ORDER BY 최대청구 DESC;
+
+GROUP_CONCAT — 문자열 연결
+-- 앨범 1번의 트랙 이름들을 &#39; / &#39; 구분자로 한 줄에 연결
+-- 생각 흐름: 여러 행의 문자열 값을 하나로 합치고 싶을 때 사용
+SELECT GROUP_CONCAT(Name, &#39; / &#39;) AS 트랙목록
+FROM tracks
+WHERE AlbumId = 1;
+-- 결과 예: &#34;For Those About To Rock / Put The Finger On You / ...&#34;
+
+HAVING — 집계 후 그룹 필터링
+-- WHERE vs HAVING 비교
+-- WHERE  : 집계 이전, 개별 행 단위 필터 (집계함수 사용 불가)
+-- HAVING : 집계 이후, 그룹 단위 필터  (집계함수 사용 가능)
+
+-- 총 매출이 $40 이상인 고객
+-- 생각 흐름: 먼저 고객별로 묶어 SUM → 그 결과에 조건 적용 → HAVING 필요
+SELECT CustomerId, ROUND(SUM(Total), 2) AS 총매출
+FROM invoices
+GROUP BY CustomerId
+HAVING 총매출 &gt;= 40
+ORDER BY 총매출 DESC;
+
+PART 2. 서브쿼리 심화
+
+복습: 서브쿼리 = SQL 안에 또 다른 SELECT.
+위치에 따라 역할이 달라집니다.">
+<meta name="author" content="">
+<link rel="canonical" href="https://hseoooo.github.io/posts/%EC%98%A4%ED%9B%84_sql%EC%8B%AC%ED%99%94_%EC%A7%91%ED%95%A9%EC%97%B0%EC%82%B0%EC%9E%90_%EA%B3%84%EC%B8%B5%ED%98%95-37b0251fbd3881dd8622d72fe38c5ab6/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://hseoooo.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://hseoooo.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://hseoooo.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://hseoooo.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://hseoooo.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://hseoooo.github.io/posts/%EC%98%A4%ED%9B%84_sql%EC%8B%AC%ED%99%94_%EC%A7%91%ED%95%A9%EC%97%B0%EC%82%B0%EC%9E%90_%EA%B3%84%EC%B8%B5%ED%98%95-37b0251fbd3881dd8622d72fe38c5ab6/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="https://hseoooo.github.io/posts/%EC%98%A4%ED%9B%84_sql%EC%8B%AC%ED%99%94_%EC%A7%91%ED%95%A9%EC%97%B0%EC%82%B0%EC%9E%90_%EA%B3%84%EC%B8%B5%ED%98%95-37b0251fbd3881dd8622d72fe38c5ab6/">
+  <meta property="og:site_name" content="Joys library">
+  <meta property="og:title" content="0610 SQL 심화 (집계 함수, 집합 연산자, 계층형)">
+  <meta property="og:description" content="🗄️ 오후 수업 요약 | SQL 심화 — 집계 함수 / 서브쿼리 심화 / 집합 연산자 / 계층형 질의 날짜: 2026-06-10
+PART 1. 집계 함수 (Aggregate Functions) 개념: 여러 행(row)을 입력받아 단일 값 하나를 반환하는 함수. GROUP BY, HAVING과 함께 쓰는 것이 핵심 패턴.
+COUNT — 행 수 세기 -- 앨범별 트랙 수 (많은 순) -- 생각 흐름: &#34;앨범마다 트랙이 몇 개씩?&#34; → AlbumId로 묶고 → TrackId 개수 셈 SELECT AlbumId, COUNT(TrackId) AS track_count FROM tracks GROUP BY AlbumId ORDER BY track_count DESC; -- DISTINCT 조합: 실제로 구매한 고유 고객 수 -- 생각 흐름: 같은 고객이 여러 번 구매해도 1명으로 세야 함 → DISTINCT 필요 SELECT COUNT(DISTINCT CustomerId) AS 구매고객수 FROM invoices; SUM — 합계 -- 연도별 총 매출 -- 생각 흐름: InvoiceDate에서 연도만 뽑아 → 그걸로 묶고 → Total 합산 SELECT strftime(&#39;%Y&#39;, InvoiceDate) AS 연도, ROUND(SUM(Total), 2) AS 연매출 FROM invoices GROUP BY 연도 ORDER BY 연도; -- strftime(&#39;%Y&#39;, 날짜컬럼) : 날짜에서 연도(4자리)만 추출하는 SQLite 함수 AVG — 평균 -- 고객 1인당 평균 청구 금액 -- 생각 흐름: invoices 테이블의 Total 전체 평균 → 단순 AVG 한 번으로 끝 SELECT ROUND(AVG(Total), 2) AS 평균청구금액 FROM invoices; MAX / MIN — 최댓값 / 최솟값 -- 고객별 최대·최소·평균 청구 금액 한 번에 -- 생각 흐름: 고객마다 여러 청구서가 있음 → CustomerId로 묶고 → 세 값 동시 계산 SELECT CustomerId, ROUND(MAX(Total), 2) AS 최대청구, ROUND(MIN(Total), 2) AS 최소청구, ROUND(AVG(Total), 2) AS 평균청구 FROM invoices GROUP BY CustomerId ORDER BY 최대청구 DESC; GROUP_CONCAT — 문자열 연결 -- 앨범 1번의 트랙 이름들을 &#39; / &#39; 구분자로 한 줄에 연결 -- 생각 흐름: 여러 행의 문자열 값을 하나로 합치고 싶을 때 사용 SELECT GROUP_CONCAT(Name, &#39; / &#39;) AS 트랙목록 FROM tracks WHERE AlbumId = 1; -- 결과 예: &#34;For Those About To Rock / Put The Finger On You / ...&#34; HAVING — 집계 후 그룹 필터링 -- WHERE vs HAVING 비교 -- WHERE : 집계 이전, 개별 행 단위 필터 (집계함수 사용 불가) -- HAVING : 집계 이후, 그룹 단위 필터 (집계함수 사용 가능) -- 총 매출이 $40 이상인 고객 -- 생각 흐름: 먼저 고객별로 묶어 SUM → 그 결과에 조건 적용 → HAVING 필요 SELECT CustomerId, ROUND(SUM(Total), 2) AS 총매출 FROM invoices GROUP BY CustomerId HAVING 총매출 &gt;= 40 ORDER BY 총매출 DESC; PART 2. 서브쿼리 심화 복습: 서브쿼리 = SQL 안에 또 다른 SELECT. 위치에 따라 역할이 달라집니다.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2026-06-08T23:20:00+09:00">
+    <meta property="article:modified_time" content="2026-06-08T23:20:00+09:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="0610 SQL 심화 (집계 함수, 집합 연산자, 계층형)">
+  <meta name="twitter:description" content="🗄️ 오후 수업 요약 | SQL 심화 — 집계 함수 / 서브쿼리 심화 / 집합 연산자 / 계층형 질의 날짜: 2026-06-10
+PART 1. 집계 함수 (Aggregate Functions) 개념: 여러 행(row)을 입력받아 단일 값 하나를 반환하는 함수. GROUP BY, HAVING과 함께 쓰는 것이 핵심 패턴.
+COUNT — 행 수 세기 -- 앨범별 트랙 수 (많은 순) -- 생각 흐름: &#34;앨범마다 트랙이 몇 개씩?&#34; → AlbumId로 묶고 → TrackId 개수 셈 SELECT AlbumId, COUNT(TrackId) AS track_count FROM tracks GROUP BY AlbumId ORDER BY track_count DESC; -- DISTINCT 조합: 실제로 구매한 고유 고객 수 -- 생각 흐름: 같은 고객이 여러 번 구매해도 1명으로 세야 함 → DISTINCT 필요 SELECT COUNT(DISTINCT CustomerId) AS 구매고객수 FROM invoices; SUM — 합계 -- 연도별 총 매출 -- 생각 흐름: InvoiceDate에서 연도만 뽑아 → 그걸로 묶고 → Total 합산 SELECT strftime(&#39;%Y&#39;, InvoiceDate) AS 연도, ROUND(SUM(Total), 2) AS 연매출 FROM invoices GROUP BY 연도 ORDER BY 연도; -- strftime(&#39;%Y&#39;, 날짜컬럼) : 날짜에서 연도(4자리)만 추출하는 SQLite 함수 AVG — 평균 -- 고객 1인당 평균 청구 금액 -- 생각 흐름: invoices 테이블의 Total 전체 평균 → 단순 AVG 한 번으로 끝 SELECT ROUND(AVG(Total), 2) AS 평균청구금액 FROM invoices; MAX / MIN — 최댓값 / 최솟값 -- 고객별 최대·최소·평균 청구 금액 한 번에 -- 생각 흐름: 고객마다 여러 청구서가 있음 → CustomerId로 묶고 → 세 값 동시 계산 SELECT CustomerId, ROUND(MAX(Total), 2) AS 최대청구, ROUND(MIN(Total), 2) AS 최소청구, ROUND(AVG(Total), 2) AS 평균청구 FROM invoices GROUP BY CustomerId ORDER BY 최대청구 DESC; GROUP_CONCAT — 문자열 연결 -- 앨범 1번의 트랙 이름들을 &#39; / &#39; 구분자로 한 줄에 연결 -- 생각 흐름: 여러 행의 문자열 값을 하나로 합치고 싶을 때 사용 SELECT GROUP_CONCAT(Name, &#39; / &#39;) AS 트랙목록 FROM tracks WHERE AlbumId = 1; -- 결과 예: &#34;For Those About To Rock / Put The Finger On You / ...&#34; HAVING — 집계 후 그룹 필터링 -- WHERE vs HAVING 비교 -- WHERE : 집계 이전, 개별 행 단위 필터 (집계함수 사용 불가) -- HAVING : 집계 이후, 그룹 단위 필터 (집계함수 사용 가능) -- 총 매출이 $40 이상인 고객 -- 생각 흐름: 먼저 고객별로 묶어 SUM → 그 결과에 조건 적용 → HAVING 필요 SELECT CustomerId, ROUND(SUM(Total), 2) AS 총매출 FROM invoices GROUP BY CustomerId HAVING 총매출 &gt;= 40 ORDER BY 총매출 DESC; PART 2. 서브쿼리 심화 복습: 서브쿼리 = SQL 안에 또 다른 SELECT. 위치에 따라 역할이 달라집니다.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://hseoooo.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "0610 SQL 심화 (집계 함수, 집합 연산자, 계층형)",
+      "item": "https://hseoooo.github.io/posts/%EC%98%A4%ED%9B%84_sql%EC%8B%AC%ED%99%94_%EC%A7%91%ED%95%A9%EC%97%B0%EC%82%B0%EC%9E%90_%EA%B3%84%EC%B8%B5%ED%98%95-37b0251fbd3881dd8622d72fe38c5ab6/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "0610 SQL 심화 (집계 함수, 집합 연산자, 계층형)",
+  "name": "0610 SQL 심화 (집계 함수, 집합 연산자, 계층형)",
+  "description": "🗄️ 오후 수업 요약 | SQL 심화 — 집계 함수 / 서브쿼리 심화 / 집합 연산자 / 계층형 질의 날짜: 2026-06-10\nPART 1. 집계 함수 (Aggregate Functions) 개념: 여러 행(row)을 입력받아 단일 값 하나를 반환하는 함수. GROUP BY, HAVING과 함께 쓰는 것이 핵심 패턴.\nCOUNT — 행 수 세기 -- 앨범별 트랙 수 (많은 순) -- 생각 흐름: \u0026#34;앨범마다 트랙이 몇 개씩?\u0026#34; → AlbumId로 묶고 → TrackId 개수 셈 SELECT AlbumId, COUNT(TrackId) AS track_count FROM tracks GROUP BY AlbumId ORDER BY track_count DESC; -- DISTINCT 조합: 실제로 구매한 고유 고객 수 -- 생각 흐름: 같은 고객이 여러 번 구매해도 1명으로 세야 함 → DISTINCT 필요 SELECT COUNT(DISTINCT CustomerId) AS 구매고객수 FROM invoices; SUM — 합계 -- 연도별 총 매출 -- 생각 흐름: InvoiceDate에서 연도만 뽑아 → 그걸로 묶고 → Total 합산 SELECT strftime(\u0026#39;%Y\u0026#39;, InvoiceDate) AS 연도, ROUND(SUM(Total), 2) AS 연매출 FROM invoices GROUP BY 연도 ORDER BY 연도; -- strftime(\u0026#39;%Y\u0026#39;, 날짜컬럼) : 날짜에서 연도(4자리)만 추출하는 SQLite 함수 AVG — 평균 -- 고객 1인당 평균 청구 금액 -- 생각 흐름: invoices 테이블의 Total 전체 평균 → 단순 AVG 한 번으로 끝 SELECT ROUND(AVG(Total), 2) AS 평균청구금액 FROM invoices; MAX / MIN — 최댓값 / 최솟값 -- 고객별 최대·최소·평균 청구 금액 한 번에 -- 생각 흐름: 고객마다 여러 청구서가 있음 → CustomerId로 묶고 → 세 값 동시 계산 SELECT CustomerId, ROUND(MAX(Total), 2) AS 최대청구, ROUND(MIN(Total), 2) AS 최소청구, ROUND(AVG(Total), 2) AS 평균청구 FROM invoices GROUP BY CustomerId ORDER BY 최대청구 DESC; GROUP_CONCAT — 문자열 연결 -- 앨범 1번의 트랙 이름들을 \u0026#39; / \u0026#39; 구분자로 한 줄에 연결 -- 생각 흐름: 여러 행의 문자열 값을 하나로 합치고 싶을 때 사용 SELECT GROUP_CONCAT(Name, \u0026#39; / \u0026#39;) AS 트랙목록 FROM tracks WHERE AlbumId = 1; -- 결과 예: \u0026#34;For Those About To Rock / Put The Finger On You / ...\u0026#34; HAVING — 집계 후 그룹 필터링 -- WHERE vs HAVING 비교 -- WHERE : 집계 이전, 개별 행 단위 필터 (집계함수 사용 불가) -- HAVING : 집계 이후, 그룹 단위 필터 (집계함수 사용 가능) -- 총 매출이 $40 이상인 고객 -- 생각 흐름: 먼저 고객별로 묶어 SUM → 그 결과에 조건 적용 → HAVING 필요 SELECT CustomerId, ROUND(SUM(Total), 2) AS 총매출 FROM invoices GROUP BY CustomerId HAVING 총매출 \u0026gt;= 40 ORDER BY 총매출 DESC; PART 2. 서브쿼리 심화 복습: 서브쿼리 = SQL 안에 또 다른 SELECT. 위치에 따라 역할이 달라집니다.\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "🗄️ 오후 수업 요약 | SQL 심화 — 집계 함수 / 서브쿼리 심화 / 집합 연산자 / 계층형 질의 날짜: 2026-06-10\nPART 1. 집계 함수 (Aggregate Functions) 개념: 여러 행(row)을 입력받아 단일 값 하나를 반환하는 함수. GROUP BY, HAVING과 함께 쓰는 것이 핵심 패턴.\nCOUNT — 행 수 세기 -- 앨범별 트랙 수 (많은 순) -- 생각 흐름: \"앨범마다 트랙이 몇 개씩?\" → AlbumId로 묶고 → TrackId 개수 셈 SELECT AlbumId, COUNT(TrackId) AS track_count FROM tracks GROUP BY AlbumId ORDER BY track_count DESC; -- DISTINCT 조합: 실제로 구매한 고유 고객 수 -- 생각 흐름: 같은 고객이 여러 번 구매해도 1명으로 세야 함 → DISTINCT 필요 SELECT COUNT(DISTINCT CustomerId) AS 구매고객수 FROM invoices; SUM — 합계 -- 연도별 총 매출 -- 생각 흐름: InvoiceDate에서 연도만 뽑아 → 그걸로 묶고 → Total 합산 SELECT strftime('%Y', InvoiceDate) AS 연도, ROUND(SUM(Total), 2) AS 연매출 FROM invoices GROUP BY 연도 ORDER BY 연도; -- strftime('%Y', 날짜컬럼) : 날짜에서 연도(4자리)만 추출하는 SQLite 함수 AVG — 평균 -- 고객 1인당 평균 청구 금액 -- 생각 흐름: invoices 테이블의 Total 전체 평균 → 단순 AVG 한 번으로 끝 SELECT ROUND(AVG(Total), 2) AS 평균청구금액 FROM invoices; MAX / MIN — 최댓값 / 최솟값 -- 고객별 최대·최소·평균 청구 금액 한 번에 -- 생각 흐름: 고객마다 여러 청구서가 있음 → CustomerId로 묶고 → 세 값 동시 계산 SELECT CustomerId, ROUND(MAX(Total), 2) AS 최대청구, ROUND(MIN(Total), 2) AS 최소청구, ROUND(AVG(Total), 2) AS 평균청구 FROM invoices GROUP BY CustomerId ORDER BY 최대청구 DESC; GROUP_CONCAT — 문자열 연결 -- 앨범 1번의 트랙 이름들을 ' / ' 구분자로 한 줄에 연결 -- 생각 흐름: 여러 행의 문자열 값을 하나로 합치고 싶을 때 사용 SELECT GROUP_CONCAT(Name, ' / ') AS 트랙목록 FROM tracks WHERE AlbumId = 1; -- 결과 예: \"For Those About To Rock / Put The Finger On You / ...\" HAVING — 집계 후 그룹 필터링 -- WHERE vs HAVING 비교 -- WHERE : 집계 이전, 개별 행 단위 필터 (집계함수 사용 불가) -- HAVING : 집계 이후, 그룹 단위 필터 (집계함수 사용 가능) -- 총 매출이 $40 이상인 고객 -- 생각 흐름: 먼저 고객별로 묶어 SUM → 그 결과에 조건 적용 → HAVING 필요 SELECT CustomerId, ROUND(SUM(Total), 2) AS 총매출 FROM invoices GROUP BY CustomerId HAVING 총매출 \u003e= 40 ORDER BY 총매출 DESC; PART 2. 서브쿼리 심화 복습: 서브쿼리 = SQL 안에 또 다른 SELECT. 위치에 따라 역할이 달라집니다.\nWHERE 절 서브쿼리 — 조건 비교 -- 평균 청구 금액보다 높은 청구서 목록 -- 생각 흐름: -- 1단계(서브쿼리): 전체 평균 Total 값을 먼저 구한다 -- 2단계(메인쿼리): 그 값보다 큰 행만 가져온다 SELECT InvoiceId, CustomerId, ROUND(Total, 2) AS 청구금액 FROM invoices WHERE Total \u003e ( SELECT AVG(Total) -- ← 숫자 1개 반환 → \u003e 연산자 사용 가능 FROM invoices ) ORDER BY Total DESC; -- NOT IN: 한 번도 판매되지 않은 트랙 -- 생각 흐름: -- 1단계(서브쿼리): invoice_items에 등장한 TrackId 목록 수집 -- 2단계(메인쿼리): 그 목록에 없는 트랙만 조회 -- ⚠️ 주의: 서브쿼리 결과에 NULL이 있으면 NOT IN은 아무것도 반환 안 할 수 있음 -- → 안전한 방법은 아래 NOT EXISTS 사용 SELECT TrackId, Name FROM tracks WHERE TrackId NOT IN ( SELECT DISTINCT TrackId -- DISTINCT로 중복 제거 FROM invoice_items ) ORDER BY TrackId; FROM 절 서브쿼리 — 인라인 뷰 (파생 테이블) -- 고객별 총 매출 TOP 5 -- 생각 흐름: -- 1단계(서브쿼리): 고객별 총매출을 먼저 계산해서 임시 테이블(sub)을 만듦 -- 2단계(메인쿼리): 그 임시 테이블을 customers와 JOIN해서 고객 이름까지 붙임 -- ⚠️ FROM 절 서브쿼리는 반드시 별칭(AS sub) 필수! SELECT sub.CustomerId, c.FirstName || ' ' || c.LastName AS 고객명, sub.총매출 FROM ( SELECT CustomerId, ROUND(SUM(Total), 2) AS 총매출 FROM invoices GROUP BY CustomerId -- ← 여기서 먼저 집계 ) AS sub -- ← 이 결과가 임시 테이블이 됨 JOIN customers c ON sub.CustomerId = c.CustomerId ORDER BY sub.총매출 DESC LIMIT 5; 연관 서브쿼리 (Correlated Subquery) — 행마다 서브쿼리 재실행 -- 자신이 속한 장르의 평균 단가보다 비싼 트랙 -- 생각 흐름: -- 외부 쿼리가 트랙 하나(t)를 읽을 때마다 -- → 서브쿼리가 \"이 트랙의 장르(t.GenreId)의 평균 단가\"를 그때그때 계산 -- → 자기 장르 평균보다 비싼 트랙만 통과 -- ⚠️ 행마다 서브쿼리가 실행되므로 데이터가 많으면 느릴 수 있음 SELECT t.Name, t.UnitPrice, g.Name AS 장르 FROM tracks t JOIN genres g ON t.GenreId = g.GenreId WHERE t.UnitPrice \u003e ( SELECT AVG(t2.UnitPrice) FROM tracks t2 WHERE t2.GenreId = t.GenreId -- ← 외부 쿼리의 t.GenreId를 참조 (연관!) ) ORDER BY g.Name, t.UnitPrice DESC; EXISTS / NOT EXISTS — 존재 여부 확인 -- 개념: IN은 값 목록 비교 / EXISTS는 \"해당 행이 존재하냐?\"만 확인 -- EXISTS는 서브쿼리가 행을 하나라도 반환하면 TRUE -- NOT EXISTS는 NOT IN보다 NULL에 안전 -- 한 번도 판매된 적 없는 트랙 (NOT EXISTS 버전) -- 생각 흐름: -- 각 트랙(t)마다 → invoice_items에 그 트랙이 있는지 검사 -- → 없으면(NOT EXISTS) 해당 트랙을 결과에 포함 SELECT t.TrackId, t.Name FROM tracks t WHERE NOT EXISTS ( SELECT 1 -- ← 어떤 값을 반환하든 상관없음, 존재 여부만 봄 FROM invoice_items ii WHERE ii.TrackId = t.TrackId -- ← 연관: 외부 t.TrackId 참조 ); PART 3. 집합 연산자 (Set Operators) 개념: 두 SELECT 결과를 집합처럼 합치거나 빼는 연산. 공통 규칙:\n두 SELECT의 컬럼 수가 같아야 한다 대응 컬럼의 데이터 타입이 호환되어야 한다 최종 컬럼명은 첫 번째 쿼리 기준 ORDER BY는 맨 마지막 한 번만 연산자 중복 제거 의미 UNION O 합집합 UNION ALL X (빠름) 합집합 (중복 포함) INTERSECT O 교집합 EXCEPT O 차집합 UNION — 합집합 (중복 제거) -- 직원 이름 + 고객 이름 통합 목록 -- 생각 흐름: -- 두 테이블에서 각각 이름을 뽑아 → 세로로 합치기 (중복 자동 제거) -- → 어느 쪽인지 구분하기 위해 'Type' 컬럼 추가 SELECT FirstName, LastName, 'Employee' AS Type FROM employees UNION SELECT FirstName, LastName, 'Customer' FROM customers ORDER BY FirstName, LastName; -- ⚠️ ORDER BY는 맨 마지막에 단 한 번만 UNION ALL — 합집합 (중복 포함, 소계 패턴에 유용) -- 연도별 매출 + 전체 합계 리포트 -- 생각 흐름: -- 위쪽 쿼리: 연도별 소계를 구함 -- 아래쪽 쿼리: 전체 합계를 한 행으로 추가 -- → UNION ALL로 합쳐서 마치 \"소계 + 합계\" 리포트처럼 만듦 SELECT strftime('%Y', InvoiceDate) AS 연도, ROUND(SUM(Total), 2) AS 매출합계 FROM invoices GROUP BY 연도 UNION ALL -- 중복 제거 없이 그냥 붙임 (UNION보다 빠름) SELECT '── 전체합계', ROUND(SUM(Total), 2) FROM invoices ORDER BY 연도; INTERSECT — 교집합 -- 2009년과 2010년 모두 구매한 고객 ID -- 생각 흐름: -- 위쪽: 2009년에 구매한 고객 집합 -- 아래쪽: 2010년에 구매한 고객 집합 -- → 교집합(INTERSECT) = 두 해 모두 구매한 고객만 남음 SELECT CustomerId FROM invoices WHERE strftime('%Y', InvoiceDate) = '2009' INTERSECT SELECT CustomerId FROM invoices WHERE strftime('%Y', InvoiceDate) = '2010' ORDER BY CustomerId; EXCEPT — 차집합 -- 2009년 구매 고객 중 2010년에는 구매하지 않은 고객 -- 생각 흐름: -- 위쪽(A): 2009년 구매 고객 집합 -- 아래쪽(B): 2010년 구매 고객 집합 -- → A에서 B를 뺌(EXCEPT) = 2009년엔 샀지만 2010년엔 안 산 고객 SELECT CustomerId FROM invoices WHERE strftime('%Y', InvoiceDate) = '2009' EXCEPT SELECT CustomerId FROM invoices WHERE strftime('%Y', InvoiceDate) = '2010' ORDER BY CustomerId; PART 4. 계층형 질의 (Hierarchical Query) 개념: 데이터 자체가 부모-자식 구조(트리)일 때 사용. SQLite에서는 WITH RECURSIVE CTE(공통 테이블 표현식)로 구현합니다.\n대상: employees 테이블\nEmployeeId: 직원 PK ReportsTo: 상위 관리자 FK (NULL = 최상위 사장님) WITH RECURSIVE — 기본 계층 조회 -- 직원 전체 보고 체계 조회 -- 생각 흐름: -- 1단계(Anchor): 출발점 설정 → ReportsTo가 NULL인 최상위 직원 1명 -- 2단계(Recursive): \"이 직원의 부하 → 그 부하의 부하 → ...\"를 반복 -- 3단계(출력): lvl(계층 깊이)을 이용해 들여쓰기로 시각화 WITH RECURSIVE emp_hierarchy( EmployeeId, FirstName, LastName, Title, ReportsTo, lvl ) AS ( -- [Anchor] 출발점: 최상위 직원 (사장) SELECT EmployeeId, FirstName, LastName, Title, ReportsTo, 0 AS lvl -- 최상위 = 레벨 0 FROM employees WHERE ReportsTo IS NULL -- ← 여기서 시작 UNION ALL -- 재귀는 반드시 UNION ALL -- [Recursive] 반복: 위에서 찾은 직원의 부하 직원을 계속 탐색 SELECT e.EmployeeId, e.FirstName, e.LastName, e.Title, e.ReportsTo, h.lvl + 1 -- ← 레벨을 1씩 증가 FROM employees e JOIN emp_hierarchy h ON e.ReportsTo = h.EmployeeId -- ← \"내 상사 = 직전 단계에서 찾은 직원\" ) -- [출력] 계층 레벨만큼 공백으로 들여쓰기 SELECT lvl AS 계층레벨, SUBSTR(' ', 1, lvl * 4) || FirstName || ' ' || LastName AS 직원명, Title AS 직책 FROM emp_hierarchy ORDER BY lvl, EmployeeId; -- 결과 예: -- 0 | Andrew Adams | General Manager -- 1 | Nancy Edwards | Sales Manager -- 2 | Jane Peacock | Sales Support Agent WITH RECURSIVE + PATH — 조직 경로 추적 -- 각 직원의 \"사장 → 부장 → 직원\" 경로 문자열 생성 -- 생각 흐름: -- Anchor에서 경로 시작값(이름) 설정 -- → Recursive 단계마다 \" \u003e 이름\"을 문자열 뒤에 계속 붙임 -- → 마지막에 노드 유형(Leaf=부하없음, Branch=관리자)도 판별 WITH RECURSIVE emp_path(..., path) AS ( -- Anchor: 경로의 시작 = 최상위 직원 이름 SELECT ..., FirstName || ' ' || LastName AS path FROM employees WHERE ReportsTo IS NULL UNION ALL -- Recursive: 경로에 \" \u003e 부하이름\" 계속 추가 SELECT ..., p.path || ' \u003e ' || e.FirstName || ' ' || e.LastName FROM employees e JOIN emp_path p ON e.ReportsTo = p.EmployeeId ) SELECT path AS 조직경로, -- Leaf 판별: 내 EmployeeId가 누군가의 ReportsTo에 없으면 = 부하가 없음 CASE WHEN EmployeeId NOT IN ( SELECT ReportsTo FROM employees WHERE ReportsTo IS NOT NULL ) THEN 'Leaf' -- 말단 직원 ELSE 'Branch' -- 중간 관리자 END AS 노드유형 FROM emp_path ORDER BY path; -- 결과 예: -- Andrew Adams \u003e Nancy Edwards \u003e Jane Peacock | Leaf -- Andrew Adams \u003e Nancy Edwards \u003e Steve Johnson | Leaf 🗂️ 오늘 배운 것 한눈에 보기 구분 키워드 핵심 집계 함수 COUNT / SUM / AVG / MAX / MIN 여러 행 → 단일 값 GROUP_CONCAT 여러 문자열 → 한 줄 연결 HAVING 집계 후 그룹 필터 (WHERE와 다름) 서브쿼리 WHERE 절 조건 값을 동적으로 계산 FROM 절 (인라인 뷰) 집계 결과를 임시 테이블로 활용 연관 서브쿼리 외부 쿼리 값을 참조, 행마다 재실행 EXISTS / NOT EXISTS NULL 안전한 존재 여부 확인 집합 연산자 UNION 합집합 (중복 제거) UNION ALL 합집합 (중복 포함, 소계 패턴) INTERSECT 교집합 (두 집합에 모두 있는 것) EXCEPT 차집합 (A에서 B를 뺀 것) 계층형 WITH RECURSIVE 트리 구조 데이터 탐색 ",
+  "wordCount" : "1655",
+  "inLanguage": "en",
+  "datePublished": "2026-06-08T23:20:00+09:00",
+  "dateModified": "2026-06-08T23:20:00+09:00",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://hseoooo.github.io/posts/%EC%98%A4%ED%9B%84_sql%EC%8B%AC%ED%99%94_%EC%A7%91%ED%95%A9%EC%97%B0%EC%82%B0%EC%9E%90_%EA%B3%84%EC%B8%B5%ED%98%95-37b0251fbd3881dd8622d72fe38c5ab6/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Joys library",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://hseoooo.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="header-nav">
+        <div class="logo">
+            <a href="https://hseoooo.github.io/" accesskey="h" title="Joys library (Alt + H)">Joys library</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu" class="menu">
+            <li>
+                <a href="https://hseoooo.github.io/categories/ai_coding/" title="AI/개발">
+                    <span>AI/개발</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://hseoooo.github.io/categories/market-analysis/" title="시장 분석">
+                    <span>시장 분석</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      0610 SQL 심화 (집계 함수, 집합 연산자, 계층형)
+    </h1>
+    <div class="post-meta">
+
+<span title='2026-06-08 23:20:00 +0900 KST'>June 8, 2026</span>
+
+</div>
+  </header> 
+  <div class="post-content md-content"><h1 id="-오후-수업-요약--sql-심화--집계-함수--서브쿼리-심화--집합-연산자--계층형-질의">🗄️ 오후 수업 요약 | SQL 심화 — 집계 함수 / 서브쿼리 심화 / 집합 연산자 / 계층형 질의<a hidden class="anchor" aria-hidden="true" href="#-오후-수업-요약--sql-심화--집계-함수--서브쿼리-심화--집합-연산자--계층형-질의">#</a></h1>
+<blockquote>
+<p>날짜: 2026-06-10</p>
+</blockquote>
+<hr>
+<h2 id="part-1-집계-함수-aggregate-functions">PART 1. 집계 함수 (Aggregate Functions)<a hidden class="anchor" aria-hidden="true" href="#part-1-집계-함수-aggregate-functions">#</a></h2>
+<blockquote>
+<p><strong>개념:</strong> 여러 행(row)을 입력받아 <strong>단일 값 하나</strong>를 반환하는 함수.
+<code>GROUP BY</code>, <code>HAVING</code>과 함께 쓰는 것이 핵심 패턴.</p>
+</blockquote>
+<hr>
+<h3 id="count--행-수-세기">COUNT — 행 수 세기<a hidden class="anchor" aria-hidden="true" href="#count--행-수-세기">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- 앨범별 트랙 수 (많은 순)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- 생각 흐름: &#34;앨범마다 트랙이 몇 개씩?&#34; → AlbumId로 묶고 → TrackId 개수 셈
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> AlbumId, <span style="color:#66d9ef">COUNT</span>(TrackId) <span style="color:#66d9ef">AS</span> track_count
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> tracks
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">GROUP</span> <span style="color:#66d9ef">BY</span> AlbumId
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> track_count <span style="color:#66d9ef">DESC</span>;
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- DISTINCT 조합: 실제로 구매한 고유 고객 수
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- 생각 흐름: 같은 고객이 여러 번 구매해도 1명으로 세야 함 → DISTINCT 필요
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> <span style="color:#66d9ef">COUNT</span>(<span style="color:#66d9ef">DISTINCT</span> CustomerId) <span style="color:#66d9ef">AS</span> <span style="color:#960050;background-color:#1e0010">구매고객수</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> invoices;
+</span></span></code></pre></div><hr>
+<h3 id="sum--합계">SUM — 합계<a hidden class="anchor" aria-hidden="true" href="#sum--합계">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- 연도별 총 매출
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- 생각 흐름: InvoiceDate에서 연도만 뽑아 → 그걸로 묶고 → Total 합산
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> strftime(<span style="color:#e6db74">&#39;%Y&#39;</span>, InvoiceDate) <span style="color:#66d9ef">AS</span> <span style="color:#960050;background-color:#1e0010">연도</span>,
+</span></span><span style="display:flex;"><span>       ROUND(<span style="color:#66d9ef">SUM</span>(Total), <span style="color:#ae81ff">2</span>)        <span style="color:#66d9ef">AS</span> <span style="color:#960050;background-color:#1e0010">연매출</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> invoices
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">GROUP</span> <span style="color:#66d9ef">BY</span> <span style="color:#960050;background-color:#1e0010">연도</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> <span style="color:#960050;background-color:#1e0010">연도</span>;
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- strftime(&#39;%Y&#39;, 날짜컬럼) : 날짜에서 연도(4자리)만 추출하는 SQLite 함수
+</span></span></span></code></pre></div><hr>
+<h3 id="avg--평균">AVG — 평균<a hidden class="anchor" aria-hidden="true" href="#avg--평균">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- 고객 1인당 평균 청구 금액
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- 생각 흐름: invoices 테이블의 Total 전체 평균 → 단순 AVG 한 번으로 끝
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> ROUND(<span style="color:#66d9ef">AVG</span>(Total), <span style="color:#ae81ff">2</span>) <span style="color:#66d9ef">AS</span> <span style="color:#960050;background-color:#1e0010">평균청구금액</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> invoices;
+</span></span></code></pre></div><hr>
+<h3 id="max--min--최댓값--최솟값">MAX / MIN — 최댓값 / 최솟값<a hidden class="anchor" aria-hidden="true" href="#max--min--최댓값--최솟값">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- 고객별 최대·최소·평균 청구 금액 한 번에
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- 생각 흐름: 고객마다 여러 청구서가 있음 → CustomerId로 묶고 → 세 값 동시 계산
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> CustomerId,
+</span></span><span style="display:flex;"><span>       ROUND(<span style="color:#66d9ef">MAX</span>(Total), <span style="color:#ae81ff">2</span>) <span style="color:#66d9ef">AS</span> <span style="color:#960050;background-color:#1e0010">최대청구</span>,
+</span></span><span style="display:flex;"><span>       ROUND(<span style="color:#66d9ef">MIN</span>(Total), <span style="color:#ae81ff">2</span>) <span style="color:#66d9ef">AS</span> <span style="color:#960050;background-color:#1e0010">최소청구</span>,
+</span></span><span style="display:flex;"><span>       ROUND(<span style="color:#66d9ef">AVG</span>(Total), <span style="color:#ae81ff">2</span>) <span style="color:#66d9ef">AS</span> <span style="color:#960050;background-color:#1e0010">평균청구</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> invoices
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">GROUP</span> <span style="color:#66d9ef">BY</span> CustomerId
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> <span style="color:#960050;background-color:#1e0010">최대청구</span> <span style="color:#66d9ef">DESC</span>;
+</span></span></code></pre></div><hr>
+<h3 id="group_concat--문자열-연결">GROUP_CONCAT — 문자열 연결<a hidden class="anchor" aria-hidden="true" href="#group_concat--문자열-연결">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- 앨범 1번의 트랙 이름들을 &#39; / &#39; 구분자로 한 줄에 연결
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- 생각 흐름: 여러 행의 문자열 값을 하나로 합치고 싶을 때 사용
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> GROUP_CONCAT(Name, <span style="color:#e6db74">&#39; / &#39;</span>) <span style="color:#66d9ef">AS</span> <span style="color:#960050;background-color:#1e0010">트랙목록</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> tracks
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> AlbumId <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- 결과 예: &#34;For Those About To Rock / Put The Finger On You / ...&#34;
+</span></span></span></code></pre></div><hr>
+<h3 id="having--집계-후-그룹-필터링">HAVING — 집계 후 그룹 필터링<a hidden class="anchor" aria-hidden="true" href="#having--집계-후-그룹-필터링">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- WHERE vs HAVING 비교
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- WHERE  : 집계 이전, 개별 행 단위 필터 (집계함수 사용 불가)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- HAVING : 집계 이후, 그룹 단위 필터  (집계함수 사용 가능)
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- 총 매출이 $40 이상인 고객
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- 생각 흐름: 먼저 고객별로 묶어 SUM → 그 결과에 조건 적용 → HAVING 필요
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> CustomerId, ROUND(<span style="color:#66d9ef">SUM</span>(Total), <span style="color:#ae81ff">2</span>) <span style="color:#66d9ef">AS</span> <span style="color:#960050;background-color:#1e0010">총매출</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> invoices
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">GROUP</span> <span style="color:#66d9ef">BY</span> CustomerId
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">HAVING</span> <span style="color:#960050;background-color:#1e0010">총매출</span> <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">40</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> <span style="color:#960050;background-color:#1e0010">총매출</span> <span style="color:#66d9ef">DESC</span>;
+</span></span></code></pre></div><hr>
+<h2 id="part-2-서브쿼리-심화">PART 2. 서브쿼리 심화<a hidden class="anchor" aria-hidden="true" href="#part-2-서브쿼리-심화">#</a></h2>
+<blockquote>
+<p><strong>복습:</strong> 서브쿼리 = SQL 안에 또 다른 SELECT.
+위치에 따라 역할이 달라집니다.</p>
+</blockquote>
+<hr>
+<h3 id="where-절-서브쿼리--조건-비교">WHERE 절 서브쿼리 — 조건 비교<a hidden class="anchor" aria-hidden="true" href="#where-절-서브쿼리--조건-비교">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- 평균 청구 금액보다 높은 청구서 목록
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- 생각 흐름:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">--   1단계(서브쿼리): 전체 평균 Total 값을 먼저 구한다
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">--   2단계(메인쿼리): 그 값보다 큰 행만 가져온다
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> InvoiceId, CustomerId, ROUND(Total, <span style="color:#ae81ff">2</span>) <span style="color:#66d9ef">AS</span> <span style="color:#960050;background-color:#1e0010">청구금액</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> invoices
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> Total <span style="color:#f92672">&gt;</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">SELECT</span> <span style="color:#66d9ef">AVG</span>(Total)  <span style="color:#75715e">-- ← 숫자 1개 반환 → &gt; 연산자 사용 가능
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">FROM</span> invoices
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> Total <span style="color:#66d9ef">DESC</span>;
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- NOT IN: 한 번도 판매되지 않은 트랙
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- 생각 흐름:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">--   1단계(서브쿼리): invoice_items에 등장한 TrackId 목록 수집
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">--   2단계(메인쿼리): 그 목록에 없는 트랙만 조회
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- ⚠️ 주의: 서브쿼리 결과에 NULL이 있으면 NOT IN은 아무것도 반환 안 할 수 있음
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">--           → 안전한 방법은 아래 NOT EXISTS 사용
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> TrackId, Name
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> tracks
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> TrackId <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">IN</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">SELECT</span> <span style="color:#66d9ef">DISTINCT</span> TrackId  <span style="color:#75715e">-- DISTINCT로 중복 제거
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">FROM</span> invoice_items
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> TrackId;
+</span></span></code></pre></div><hr>
+<h3 id="from-절-서브쿼리--인라인-뷰-파생-테이블">FROM 절 서브쿼리 — 인라인 뷰 (파생 테이블)<a hidden class="anchor" aria-hidden="true" href="#from-절-서브쿼리--인라인-뷰-파생-테이블">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- 고객별 총 매출 TOP 5
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- 생각 흐름:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">--   1단계(서브쿼리): 고객별 총매출을 먼저 계산해서 임시 테이블(sub)을 만듦
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">--   2단계(메인쿼리): 그 임시 테이블을 customers와 JOIN해서 고객 이름까지 붙임
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- ⚠️ FROM 절 서브쿼리는 반드시 별칭(AS sub) 필수!
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> sub.CustomerId,
+</span></span><span style="display:flex;"><span>       <span style="color:#66d9ef">c</span>.FirstName <span style="color:#f92672">||</span> <span style="color:#e6db74">&#39; &#39;</span> <span style="color:#f92672">||</span> <span style="color:#66d9ef">c</span>.LastName <span style="color:#66d9ef">AS</span> <span style="color:#960050;background-color:#1e0010">고객명</span>,
+</span></span><span style="display:flex;"><span>       sub.<span style="color:#960050;background-color:#1e0010">총매출</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">SELECT</span> CustomerId, ROUND(<span style="color:#66d9ef">SUM</span>(Total), <span style="color:#ae81ff">2</span>) <span style="color:#66d9ef">AS</span> <span style="color:#960050;background-color:#1e0010">총매출</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">FROM</span> invoices
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">GROUP</span> <span style="color:#66d9ef">BY</span> CustomerId       <span style="color:#75715e">-- ← 여기서 먼저 집계
+</span></span></span><span style="display:flex;"><span>) <span style="color:#66d9ef">AS</span> sub                      <span style="color:#75715e">-- ← 이 결과가 임시 테이블이 됨
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">JOIN</span> customers <span style="color:#66d9ef">c</span> <span style="color:#66d9ef">ON</span> sub.CustomerId <span style="color:#f92672">=</span> <span style="color:#66d9ef">c</span>.CustomerId
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> sub.<span style="color:#960050;background-color:#1e0010">총매출</span> <span style="color:#66d9ef">DESC</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">LIMIT</span> <span style="color:#ae81ff">5</span>;
+</span></span></code></pre></div><hr>
+<h3 id="연관-서브쿼리-correlated-subquery--행마다-서브쿼리-재실행">연관 서브쿼리 (Correlated Subquery) — 행마다 서브쿼리 재실행<a hidden class="anchor" aria-hidden="true" href="#연관-서브쿼리-correlated-subquery--행마다-서브쿼리-재실행">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- 자신이 속한 장르의 평균 단가보다 비싼 트랙
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- 생각 흐름:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">--   외부 쿼리가 트랙 하나(t)를 읽을 때마다
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">--   → 서브쿼리가 &#34;이 트랙의 장르(t.GenreId)의 평균 단가&#34;를 그때그때 계산
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">--   → 자기 장르 평균보다 비싼 트랙만 통과
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- ⚠️ 행마다 서브쿼리가 실행되므로 데이터가 많으면 느릴 수 있음
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> t.Name, t.UnitPrice, <span style="color:#66d9ef">g</span>.Name <span style="color:#66d9ef">AS</span> <span style="color:#960050;background-color:#1e0010">장르</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> tracks t
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">JOIN</span> genres <span style="color:#66d9ef">g</span> <span style="color:#66d9ef">ON</span> t.GenreId <span style="color:#f92672">=</span> <span style="color:#66d9ef">g</span>.GenreId
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> t.UnitPrice <span style="color:#f92672">&gt;</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">SELECT</span> <span style="color:#66d9ef">AVG</span>(t2.UnitPrice)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">FROM</span> tracks t2
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">WHERE</span> t2.GenreId <span style="color:#f92672">=</span> t.GenreId  <span style="color:#75715e">-- ← 외부 쿼리의 t.GenreId를 참조 (연관!)
+</span></span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> <span style="color:#66d9ef">g</span>.Name, t.UnitPrice <span style="color:#66d9ef">DESC</span>;
+</span></span></code></pre></div><hr>
+<h3 id="exists--not-exists--존재-여부-확인">EXISTS / NOT EXISTS — 존재 여부 확인<a hidden class="anchor" aria-hidden="true" href="#exists--not-exists--존재-여부-확인">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- 개념: IN은 값 목록 비교 / EXISTS는 &#34;해당 행이 존재하냐?&#34;만 확인
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- EXISTS는 서브쿼리가 행을 하나라도 반환하면 TRUE
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- NOT EXISTS는 NOT IN보다 NULL에 안전
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- 한 번도 판매된 적 없는 트랙 (NOT EXISTS 버전)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- 생각 흐름:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">--   각 트랙(t)마다 → invoice_items에 그 트랙이 있는지 검사
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">--   → 없으면(NOT EXISTS) 해당 트랙을 결과에 포함
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> t.TrackId, t.Name
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> tracks t
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">EXISTS</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">SELECT</span> <span style="color:#ae81ff">1</span>              <span style="color:#75715e">-- ← 어떤 값을 반환하든 상관없음, 존재 여부만 봄
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">FROM</span> invoice_items ii
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">WHERE</span> ii.TrackId <span style="color:#f92672">=</span> t.TrackId  <span style="color:#75715e">-- ← 연관: 외부 t.TrackId 참조
+</span></span></span><span style="display:flex;"><span>);
+</span></span></code></pre></div><hr>
+<h2 id="part-3-집합-연산자-set-operators">PART 3. 집합 연산자 (Set Operators)<a hidden class="anchor" aria-hidden="true" href="#part-3-집합-연산자-set-operators">#</a></h2>
+<blockquote>
+<p><strong>개념:</strong> 두 SELECT 결과를 집합처럼 합치거나 빼는 연산.
+<strong>공통 규칙:</strong></p>
+</blockquote>
+<ul>
+<li>두 SELECT의 <strong>컬럼 수가 같아야</strong> 한다</li>
+<li>대응 컬럼의 <strong>데이터 타입이 호환</strong>되어야 한다</li>
+<li>최종 컬럼명은 <strong>첫 번째 쿼리</strong> 기준</li>
+<li><code>ORDER BY</code>는 맨 마지막 한 번만</li>
+</ul>
+<blockquote>
+</blockquote>
+<table>
+	<thead>
+			<tr>
+					<th>연산자</th>
+					<th>중복 제거</th>
+					<th>의미</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>UNION</code></td>
+					<td>O</td>
+					<td>합집합</td>
+			</tr>
+			<tr>
+					<td><code>UNION ALL</code></td>
+					<td>X (빠름)</td>
+					<td>합집합 (중복 포함)</td>
+			</tr>
+			<tr>
+					<td><code>INTERSECT</code></td>
+					<td>O</td>
+					<td>교집합</td>
+			</tr>
+			<tr>
+					<td><code>EXCEPT</code></td>
+					<td>O</td>
+					<td>차집합</td>
+			</tr>
+	</tbody>
+</table>
+<hr>
+<h3 id="union--합집합-중복-제거">UNION — 합집합 (중복 제거)<a hidden class="anchor" aria-hidden="true" href="#union--합집합-중복-제거">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- 직원 이름 + 고객 이름 통합 목록
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- 생각 흐름:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">--   두 테이블에서 각각 이름을 뽑아 → 세로로 합치기 (중복 자동 제거)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">--   → 어느 쪽인지 구분하기 위해 &#39;Type&#39; 컬럼 추가
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> FirstName, LastName, <span style="color:#e6db74">&#39;Employee&#39;</span> <span style="color:#66d9ef">AS</span> <span style="color:#66d9ef">Type</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> employees
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">UNION</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> FirstName, LastName, <span style="color:#e6db74">&#39;Customer&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> customers
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> FirstName, LastName;
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- ⚠️ ORDER BY는 맨 마지막에 단 한 번만
+</span></span></span></code></pre></div><hr>
+<h3 id="union-all--합집합-중복-포함-소계-패턴에-유용">UNION ALL — 합집합 (중복 포함, 소계 패턴에 유용)<a hidden class="anchor" aria-hidden="true" href="#union-all--합집합-중복-포함-소계-패턴에-유용">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- 연도별 매출 + 전체 합계 리포트
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- 생각 흐름:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">--   위쪽 쿼리: 연도별 소계를 구함
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">--   아래쪽 쿼리: 전체 합계를 한 행으로 추가
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">--   → UNION ALL로 합쳐서 마치 &#34;소계 + 합계&#34; 리포트처럼 만듦
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> strftime(<span style="color:#e6db74">&#39;%Y&#39;</span>, InvoiceDate) <span style="color:#66d9ef">AS</span> <span style="color:#960050;background-color:#1e0010">연도</span>,
+</span></span><span style="display:flex;"><span>       ROUND(<span style="color:#66d9ef">SUM</span>(Total), <span style="color:#ae81ff">2</span>)        <span style="color:#66d9ef">AS</span> <span style="color:#960050;background-color:#1e0010">매출합계</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> invoices
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">GROUP</span> <span style="color:#66d9ef">BY</span> <span style="color:#960050;background-color:#1e0010">연도</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">UNION</span> <span style="color:#66d9ef">ALL</span>  <span style="color:#75715e">-- 중복 제거 없이 그냥 붙임 (UNION보다 빠름)
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> <span style="color:#e6db74">&#39;── 전체합계&#39;</span>,
+</span></span><span style="display:flex;"><span>       ROUND(<span style="color:#66d9ef">SUM</span>(Total), <span style="color:#ae81ff">2</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> invoices
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> <span style="color:#960050;background-color:#1e0010">연도</span>;
+</span></span></code></pre></div><hr>
+<h3 id="intersect--교집합">INTERSECT — 교집합<a hidden class="anchor" aria-hidden="true" href="#intersect--교집합">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- 2009년과 2010년 모두 구매한 고객 ID
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- 생각 흐름:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">--   위쪽: 2009년에 구매한 고객 집합
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">--   아래쪽: 2010년에 구매한 고객 집합
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">--   → 교집합(INTERSECT) = 두 해 모두 구매한 고객만 남음
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> CustomerId
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> invoices
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> strftime(<span style="color:#e6db74">&#39;%Y&#39;</span>, InvoiceDate) <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;2009&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">INTERSECT</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> CustomerId
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> invoices
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> strftime(<span style="color:#e6db74">&#39;%Y&#39;</span>, InvoiceDate) <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;2010&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> CustomerId;
+</span></span></code></pre></div><hr>
+<h3 id="except--차집합">EXCEPT — 차집합<a hidden class="anchor" aria-hidden="true" href="#except--차집합">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- 2009년 구매 고객 중 2010년에는 구매하지 않은 고객
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- 생각 흐름:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">--   위쪽(A): 2009년 구매 고객 집합
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">--   아래쪽(B): 2010년 구매 고객 집합
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">--   → A에서 B를 뺌(EXCEPT) = 2009년엔 샀지만 2010년엔 안 산 고객
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> CustomerId
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> invoices
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> strftime(<span style="color:#e6db74">&#39;%Y&#39;</span>, InvoiceDate) <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;2009&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">EXCEPT</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> CustomerId
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> invoices
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> strftime(<span style="color:#e6db74">&#39;%Y&#39;</span>, InvoiceDate) <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;2010&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> CustomerId;
+</span></span></code></pre></div><hr>
+<h2 id="part-4-계층형-질의-hierarchical-query">PART 4. 계층형 질의 (Hierarchical Query)<a hidden class="anchor" aria-hidden="true" href="#part-4-계층형-질의-hierarchical-query">#</a></h2>
+<blockquote>
+<p><strong>개념:</strong> 데이터 자체가 부모-자식 구조(트리)일 때 사용.
+SQLite에서는 <code>WITH RECURSIVE</code> CTE(공통 테이블 표현식)로 구현합니다.</p>
+<p><strong>대상:</strong> <code>employees</code> 테이블</p>
+<ul>
+<li><code>EmployeeId</code>: 직원 PK</li>
+<li><code>ReportsTo</code>: 상위 관리자 FK (NULL = 최상위 사장님)</li>
+</ul>
+</blockquote>
+<hr>
+<h3 id="with-recursive--기본-계층-조회">WITH RECURSIVE — 기본 계층 조회<a hidden class="anchor" aria-hidden="true" href="#with-recursive--기본-계층-조회">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- 직원 전체 보고 체계 조회
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- 생각 흐름:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">--   1단계(Anchor): 출발점 설정 → ReportsTo가 NULL인 최상위 직원 1명
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">--   2단계(Recursive): &#34;이 직원의 부하 → 그 부하의 부하 → ...&#34;를 반복
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">--   3단계(출력): lvl(계층 깊이)을 이용해 들여쓰기로 시각화
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WITH</span> <span style="color:#66d9ef">RECURSIVE</span> emp_hierarchy(
+</span></span><span style="display:flex;"><span>    EmployeeId, FirstName, LastName, Title, ReportsTo, lvl
+</span></span><span style="display:flex;"><span>) <span style="color:#66d9ef">AS</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">-- [Anchor] 출발점: 최상위 직원 (사장)
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">SELECT</span> EmployeeId, FirstName, LastName, Title, ReportsTo,
+</span></span><span style="display:flex;"><span>           <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">AS</span> lvl          <span style="color:#75715e">-- 최상위 = 레벨 0
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">FROM</span> employees
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">WHERE</span> ReportsTo <span style="color:#66d9ef">IS</span> <span style="color:#66d9ef">NULL</span>  <span style="color:#75715e">-- ← 여기서 시작
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">UNION</span> <span style="color:#66d9ef">ALL</span>                <span style="color:#75715e">-- 재귀는 반드시 UNION ALL
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">-- [Recursive] 반복: 위에서 찾은 직원의 부하 직원을 계속 탐색
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">SELECT</span> e.EmployeeId, e.FirstName, e.LastName,
+</span></span><span style="display:flex;"><span>           e.Title, e.ReportsTo,
+</span></span><span style="display:flex;"><span>           h.lvl <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>         <span style="color:#75715e">-- ← 레벨을 1씩 증가
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">FROM</span> employees e
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">JOIN</span> emp_hierarchy h
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">ON</span> e.ReportsTo <span style="color:#f92672">=</span> h.EmployeeId  <span style="color:#75715e">-- ← &#34;내 상사 = 직전 단계에서 찾은 직원&#34;
+</span></span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- [출력] 계층 레벨만큼 공백으로 들여쓰기
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> lvl <span style="color:#66d9ef">AS</span> <span style="color:#960050;background-color:#1e0010">계층레벨</span>,
+</span></span><span style="display:flex;"><span>       SUBSTR(<span style="color:#e6db74">&#39;                &#39;</span>, <span style="color:#ae81ff">1</span>, lvl <span style="color:#f92672">*</span> <span style="color:#ae81ff">4</span>)
+</span></span><span style="display:flex;"><span>           <span style="color:#f92672">||</span> FirstName <span style="color:#f92672">||</span> <span style="color:#e6db74">&#39; &#39;</span> <span style="color:#f92672">||</span> LastName <span style="color:#66d9ef">AS</span> <span style="color:#960050;background-color:#1e0010">직원명</span>,
+</span></span><span style="display:flex;"><span>       Title <span style="color:#66d9ef">AS</span> <span style="color:#960050;background-color:#1e0010">직책</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> emp_hierarchy
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> lvl, EmployeeId;
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- 결과 예:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- 0 | Andrew Adams         | General Manager
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- 1 |     Nancy Edwards    | Sales Manager
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- 2 |         Jane Peacock | Sales Support Agent
+</span></span></span></code></pre></div><hr>
+<h3 id="with-recursive--path--조직-경로-추적">WITH RECURSIVE + PATH — 조직 경로 추적<a hidden class="anchor" aria-hidden="true" href="#with-recursive--path--조직-경로-추적">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- 각 직원의 &#34;사장 → 부장 → 직원&#34; 경로 문자열 생성
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- 생각 흐름:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">--   Anchor에서 경로 시작값(이름) 설정
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">--   → Recursive 단계마다 &#34; &gt; 이름&#34;을 문자열 뒤에 계속 붙임
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">--   → 마지막에 노드 유형(Leaf=부하없음, Branch=관리자)도 판별
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WITH</span> <span style="color:#66d9ef">RECURSIVE</span> emp_path(..., path) <span style="color:#66d9ef">AS</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">-- Anchor: 경로의 시작 = 최상위 직원 이름
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">SELECT</span> ..., FirstName <span style="color:#f92672">||</span> <span style="color:#e6db74">&#39; &#39;</span> <span style="color:#f92672">||</span> LastName <span style="color:#66d9ef">AS</span> path
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">FROM</span> employees
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">WHERE</span> ReportsTo <span style="color:#66d9ef">IS</span> <span style="color:#66d9ef">NULL</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">UNION</span> <span style="color:#66d9ef">ALL</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">-- Recursive: 경로에 &#34; &gt; 부하이름&#34; 계속 추가
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">SELECT</span> ..., p.path <span style="color:#f92672">||</span> <span style="color:#e6db74">&#39; &gt; &#39;</span> <span style="color:#f92672">||</span> e.FirstName <span style="color:#f92672">||</span> <span style="color:#e6db74">&#39; &#39;</span> <span style="color:#f92672">||</span> e.LastName
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">FROM</span> employees e
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">JOIN</span> emp_path p <span style="color:#66d9ef">ON</span> e.ReportsTo <span style="color:#f92672">=</span> p.EmployeeId
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> path <span style="color:#66d9ef">AS</span> <span style="color:#960050;background-color:#1e0010">조직경로</span>,
+</span></span><span style="display:flex;"><span>       <span style="color:#75715e">-- Leaf 판별: 내 EmployeeId가 누군가의 ReportsTo에 없으면 = 부하가 없음
+</span></span></span><span style="display:flex;"><span>       <span style="color:#66d9ef">CASE</span>
+</span></span><span style="display:flex;"><span>           <span style="color:#66d9ef">WHEN</span> EmployeeId <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">IN</span> (
+</span></span><span style="display:flex;"><span>               <span style="color:#66d9ef">SELECT</span> ReportsTo <span style="color:#66d9ef">FROM</span> employees <span style="color:#66d9ef">WHERE</span> ReportsTo <span style="color:#66d9ef">IS</span> <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>
+</span></span><span style="display:flex;"><span>           ) <span style="color:#66d9ef">THEN</span> <span style="color:#e6db74">&#39;Leaf&#39;</span>    <span style="color:#75715e">-- 말단 직원
+</span></span></span><span style="display:flex;"><span>           <span style="color:#66d9ef">ELSE</span> <span style="color:#e6db74">&#39;Branch&#39;</span>    <span style="color:#75715e">-- 중간 관리자
+</span></span></span><span style="display:flex;"><span>       <span style="color:#66d9ef">END</span> <span style="color:#66d9ef">AS</span> <span style="color:#960050;background-color:#1e0010">노드유형</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> emp_path
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> path;
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- 결과 예:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- Andrew Adams &gt; Nancy Edwards &gt; Jane Peacock | Leaf
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- Andrew Adams &gt; Nancy Edwards &gt; Steve Johnson | Leaf
+</span></span></span></code></pre></div><hr>
+<h2 id="-오늘-배운-것-한눈에-보기">🗂️ 오늘 배운 것 한눈에 보기<a hidden class="anchor" aria-hidden="true" href="#-오늘-배운-것-한눈에-보기">#</a></h2>
+<table>
+	<thead>
+			<tr>
+					<th>구분</th>
+					<th>키워드</th>
+					<th>핵심</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>집계 함수</strong></td>
+					<td><code>COUNT / SUM / AVG / MAX / MIN</code></td>
+					<td>여러 행 → 단일 값</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td><code>GROUP_CONCAT</code></td>
+					<td>여러 문자열 → 한 줄 연결</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td><code>HAVING</code></td>
+					<td>집계 후 그룹 필터 (WHERE와 다름)</td>
+			</tr>
+			<tr>
+					<td><strong>서브쿼리</strong></td>
+					<td>WHERE 절</td>
+					<td>조건 값을 동적으로 계산</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>FROM 절 (인라인 뷰)</td>
+					<td>집계 결과를 임시 테이블로 활용</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>연관 서브쿼리</td>
+					<td>외부 쿼리 값을 참조, 행마다 재실행</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td><code>EXISTS / NOT EXISTS</code></td>
+					<td>NULL 안전한 존재 여부 확인</td>
+			</tr>
+			<tr>
+					<td><strong>집합 연산자</strong></td>
+					<td><code>UNION</code></td>
+					<td>합집합 (중복 제거)</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td><code>UNION ALL</code></td>
+					<td>합집합 (중복 포함, 소계 패턴)</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td><code>INTERSECT</code></td>
+					<td>교집합 (두 집합에 모두 있는 것)</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td><code>EXCEPT</code></td>
+					<td>차집합 (A에서 B를 뺀 것)</td>
+			</tr>
+			<tr>
+					<td><strong>계층형</strong></td>
+					<td><code>WITH RECURSIVE</code></td>
+					<td>트리 구조 데이터 탐색</td>
+			</tr>
+	</tbody>
+</table>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="https://hseoooo.github.io/">Joys library</a></span> · 
+
+    
+    
+    <span>
+        Powered by
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var toplink = document.getElementById("top-link");
+    window.onscroll = function () {
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
+        } else {
+            toplink.classList.add("hidden");
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>
