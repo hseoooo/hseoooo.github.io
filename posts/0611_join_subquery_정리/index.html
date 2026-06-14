@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>0611 SQL 심화 (집계 함수, 집합 연산자, 계층형) | Joys library</title>
+<meta name="keywords" content="">
+<meta name="description" content="JOIN 심화 &amp; 서브쿼리 심화
+
+사용 DB: chinook.db (SQLite Tutorial 샘플 DB)
+
+
+1. JOIN 심화
+1) EQUI JOIN / Non EQUI JOIN
+
+EQUI JOIN: = 연산자로 연결하는 등가 조인. 기본키-외래키 관계에서 주로 사용.
+Non EQUI JOIN: &gt;, &lt;, BETWEEN 등 비등가 연산자를 사용하는 조인.
+
+-- EQUI JOIN (WHERE 절)
+SELECT al.Title AS AlbumTitle, ar.Name AS ArtistName
+FROM albums al, artists ar
+WHERE al.ArtistId = ar.ArtistId
+ORDER BY al.Title;
+
+-- Non EQUI JOIN (재생시간 비교)
+SELECT t1.Name AS LongTrack, t1.Milliseconds AS LongMs,
+       t2.Name AS ShortTrack, t2.Milliseconds AS ShortMs
+FROM tracks t1, tracks t2
+WHERE t1.AlbumId = t2.AlbumId
+  AND t1.Milliseconds &gt;= 300000
+  AND t2.Milliseconds &lt;  t1.Milliseconds;
+
+2) INNER JOIN (ON / USING / NATURAL)
+
+ON: 컬럼명이 달라도 사용 가능, 가장 일반적인 형태.
+USING: 동일한 이름의 컬럼에 사용. 별칭(alias) 사용 불가.
+NATURAL: 이름이 같은 모든 컬럼을 자동으로 등가 조인 조건으로 사용. 별칭 및 추가 조건(ON/USING/WHERE) 불가.
+
+-- ON 절
+SELECT t.Name AS TrackName, g.Name AS GenreName
+FROM tracks t
+INNER JOIN genres g ON t.GenreId = g.GenreId;
+
+-- USING 절 (별칭 금지)
+SELECT albums.Title AS AlbumTitle, artists.Name AS ArtistName
+FROM albums
+INNER JOIN artists USING (ArtistId);
+
+-- NATURAL JOIN (공통 컬럼 자동 매칭, 별칭 금지)
+SELECT albums.Title AS AlbumTitle, artists.Name AS ArtistName
+FROM albums
+NATURAL JOIN artists;
+
+3) CROSS JOIN
+
+조인 조건 없이 두 테이블의 모든 행 조합(카테시안 곱) 생성.
+결과 행 수 = 테이블A 행 수 × 테이블B 행 수.
+
+SELECT g.Name AS GenreName, m.Name AS MediaTypeName
+FROM genres g
+CROSS JOIN media_types m;
+
+4) OUTER JOIN (LEFT / RIGHT / FULL)
+
+	
+			
+					종류
+					설명
+					SQLite 지원
+			
+	
+	
+			
+					LEFT OUTER JOIN
+					왼쪽 테이블 모든 행 보존, 불일치는 NULL
+					항상 지원
+			
+			
+					RIGHT OUTER JOIN
+					오른쪽 테이블 모든 행 보존
+					SQLite 3.39.0 이상
+			
+			
+					FULL OUTER JOIN
+					양쪽 모두 보존
+					SQLite 3.39.0 이상
+			
+	
+
+
+버전 확인: SELECT sqlite_version();
+구버전 대안: RIGHT JOIN → 테이블 순서 바꿔 LEFT JOIN / FULL JOIN → LEFT JOIN UNION RIGHT JOIN
+
+-- LEFT JOIN: 앨범 없는 아티스트도 포함
+SELECT ar.Name AS ArtistName, al.Title AS AlbumTitle
+FROM artists ar
+LEFT JOIN albums al ON ar.ArtistId = al.ArtistId;
+
+-- &#34;없는 데이터&#34; 찾기: LEFT JOIN &#43; IS NULL
+SELECT ar.Name AS ArtistName
+FROM artists ar
+LEFT JOIN albums al ON ar.ArtistId = al.ArtistId
+WHERE al.AlbumId IS NULL;
+
+-- RIGHT JOIN → LEFT JOIN 변환 (테이블 순서 교체)
+SELECT g.Name AS GenreName, COUNT(t.TrackId) AS TrackCount
+FROM genres g
+LEFT JOIN tracks t ON g.GenreId = t.GenreId
+GROUP BY g.GenreId, g.Name;
+
+-- FULL OUTER JOIN 대체 (구버전): UNION
+SELECT ar.Name AS ArtistName, al.Title AS AlbumTitle
+FROM artists ar LEFT JOIN albums al ON ar.ArtistId = al.ArtistId
+UNION
+SELECT ar.Name AS ArtistName, al.Title AS AlbumTitle
+FROM artists ar RIGHT JOIN albums al ON ar.ArtistId = al.ArtistId;
+
+ON vs WHERE (OUTER JOIN에서 중요)">
+<meta name="author" content="">
+<link rel="canonical" href="https://hseoooo.github.io/posts/0611_join_subquery_%EC%A0%95%EB%A6%AC/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://hseoooo.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://hseoooo.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://hseoooo.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://hseoooo.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://hseoooo.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://hseoooo.github.io/posts/0611_join_subquery_%EC%A0%95%EB%A6%AC/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="https://hseoooo.github.io/posts/0611_join_subquery_%EC%A0%95%EB%A6%AC/">
+  <meta property="og:site_name" content="Joys library">
+  <meta property="og:title" content="0611 SQL 심화 (집계 함수, 집합 연산자, 계층형)">
+  <meta property="og:description" content="JOIN 심화 &amp; 서브쿼리 심화 사용 DB: chinook.db (SQLite Tutorial 샘플 DB)
+1. JOIN 심화 1) EQUI JOIN / Non EQUI JOIN EQUI JOIN: = 연산자로 연결하는 등가 조인. 기본키-외래키 관계에서 주로 사용. Non EQUI JOIN: &gt;, &lt;, BETWEEN 등 비등가 연산자를 사용하는 조인. -- EQUI JOIN (WHERE 절) SELECT al.Title AS AlbumTitle, ar.Name AS ArtistName FROM albums al, artists ar WHERE al.ArtistId = ar.ArtistId ORDER BY al.Title; -- Non EQUI JOIN (재생시간 비교) SELECT t1.Name AS LongTrack, t1.Milliseconds AS LongMs, t2.Name AS ShortTrack, t2.Milliseconds AS ShortMs FROM tracks t1, tracks t2 WHERE t1.AlbumId = t2.AlbumId AND t1.Milliseconds &gt;= 300000 AND t2.Milliseconds &lt; t1.Milliseconds; 2) INNER JOIN (ON / USING / NATURAL) ON: 컬럼명이 달라도 사용 가능, 가장 일반적인 형태. USING: 동일한 이름의 컬럼에 사용. 별칭(alias) 사용 불가. NATURAL: 이름이 같은 모든 컬럼을 자동으로 등가 조인 조건으로 사용. 별칭 및 추가 조건(ON/USING/WHERE) 불가. -- ON 절 SELECT t.Name AS TrackName, g.Name AS GenreName FROM tracks t INNER JOIN genres g ON t.GenreId = g.GenreId; -- USING 절 (별칭 금지) SELECT albums.Title AS AlbumTitle, artists.Name AS ArtistName FROM albums INNER JOIN artists USING (ArtistId); -- NATURAL JOIN (공통 컬럼 자동 매칭, 별칭 금지) SELECT albums.Title AS AlbumTitle, artists.Name AS ArtistName FROM albums NATURAL JOIN artists; 3) CROSS JOIN 조인 조건 없이 두 테이블의 모든 행 조합(카테시안 곱) 생성. 결과 행 수 = 테이블A 행 수 × 테이블B 행 수. SELECT g.Name AS GenreName, m.Name AS MediaTypeName FROM genres g CROSS JOIN media_types m; 4) OUTER JOIN (LEFT / RIGHT / FULL) 종류 설명 SQLite 지원 LEFT OUTER JOIN 왼쪽 테이블 모든 행 보존, 불일치는 NULL 항상 지원 RIGHT OUTER JOIN 오른쪽 테이블 모든 행 보존 SQLite 3.39.0 이상 FULL OUTER JOIN 양쪽 모두 보존 SQLite 3.39.0 이상 버전 확인: SELECT sqlite_version(); 구버전 대안: RIGHT JOIN → 테이블 순서 바꿔 LEFT JOIN / FULL JOIN → LEFT JOIN UNION RIGHT JOIN -- LEFT JOIN: 앨범 없는 아티스트도 포함 SELECT ar.Name AS ArtistName, al.Title AS AlbumTitle FROM artists ar LEFT JOIN albums al ON ar.ArtistId = al.ArtistId; -- &#34;없는 데이터&#34; 찾기: LEFT JOIN &#43; IS NULL SELECT ar.Name AS ArtistName FROM artists ar LEFT JOIN albums al ON ar.ArtistId = al.ArtistId WHERE al.AlbumId IS NULL; -- RIGHT JOIN → LEFT JOIN 변환 (테이블 순서 교체) SELECT g.Name AS GenreName, COUNT(t.TrackId) AS TrackCount FROM genres g LEFT JOIN tracks t ON g.GenreId = t.GenreId GROUP BY g.GenreId, g.Name; -- FULL OUTER JOIN 대체 (구버전): UNION SELECT ar.Name AS ArtistName, al.Title AS AlbumTitle FROM artists ar LEFT JOIN albums al ON ar.ArtistId = al.ArtistId UNION SELECT ar.Name AS ArtistName, al.Title AS AlbumTitle FROM artists ar RIGHT JOIN albums al ON ar.ArtistId = al.ArtistId; ON vs WHERE (OUTER JOIN에서 중요)">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2026-06-14T23:30:00+09:00">
+    <meta property="article:modified_time" content="2026-06-14T23:30:00+09:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="0611 SQL 심화 (집계 함수, 집합 연산자, 계층형)">
+  <meta name="twitter:description" content="JOIN 심화 &amp; 서브쿼리 심화 사용 DB: chinook.db (SQLite Tutorial 샘플 DB)
+1. JOIN 심화 1) EQUI JOIN / Non EQUI JOIN EQUI JOIN: = 연산자로 연결하는 등가 조인. 기본키-외래키 관계에서 주로 사용. Non EQUI JOIN: &gt;, &lt;, BETWEEN 등 비등가 연산자를 사용하는 조인. -- EQUI JOIN (WHERE 절) SELECT al.Title AS AlbumTitle, ar.Name AS ArtistName FROM albums al, artists ar WHERE al.ArtistId = ar.ArtistId ORDER BY al.Title; -- Non EQUI JOIN (재생시간 비교) SELECT t1.Name AS LongTrack, t1.Milliseconds AS LongMs, t2.Name AS ShortTrack, t2.Milliseconds AS ShortMs FROM tracks t1, tracks t2 WHERE t1.AlbumId = t2.AlbumId AND t1.Milliseconds &gt;= 300000 AND t2.Milliseconds &lt; t1.Milliseconds; 2) INNER JOIN (ON / USING / NATURAL) ON: 컬럼명이 달라도 사용 가능, 가장 일반적인 형태. USING: 동일한 이름의 컬럼에 사용. 별칭(alias) 사용 불가. NATURAL: 이름이 같은 모든 컬럼을 자동으로 등가 조인 조건으로 사용. 별칭 및 추가 조건(ON/USING/WHERE) 불가. -- ON 절 SELECT t.Name AS TrackName, g.Name AS GenreName FROM tracks t INNER JOIN genres g ON t.GenreId = g.GenreId; -- USING 절 (별칭 금지) SELECT albums.Title AS AlbumTitle, artists.Name AS ArtistName FROM albums INNER JOIN artists USING (ArtistId); -- NATURAL JOIN (공통 컬럼 자동 매칭, 별칭 금지) SELECT albums.Title AS AlbumTitle, artists.Name AS ArtistName FROM albums NATURAL JOIN artists; 3) CROSS JOIN 조인 조건 없이 두 테이블의 모든 행 조합(카테시안 곱) 생성. 결과 행 수 = 테이블A 행 수 × 테이블B 행 수. SELECT g.Name AS GenreName, m.Name AS MediaTypeName FROM genres g CROSS JOIN media_types m; 4) OUTER JOIN (LEFT / RIGHT / FULL) 종류 설명 SQLite 지원 LEFT OUTER JOIN 왼쪽 테이블 모든 행 보존, 불일치는 NULL 항상 지원 RIGHT OUTER JOIN 오른쪽 테이블 모든 행 보존 SQLite 3.39.0 이상 FULL OUTER JOIN 양쪽 모두 보존 SQLite 3.39.0 이상 버전 확인: SELECT sqlite_version(); 구버전 대안: RIGHT JOIN → 테이블 순서 바꿔 LEFT JOIN / FULL JOIN → LEFT JOIN UNION RIGHT JOIN -- LEFT JOIN: 앨범 없는 아티스트도 포함 SELECT ar.Name AS ArtistName, al.Title AS AlbumTitle FROM artists ar LEFT JOIN albums al ON ar.ArtistId = al.ArtistId; -- &#34;없는 데이터&#34; 찾기: LEFT JOIN &#43; IS NULL SELECT ar.Name AS ArtistName FROM artists ar LEFT JOIN albums al ON ar.ArtistId = al.ArtistId WHERE al.AlbumId IS NULL; -- RIGHT JOIN → LEFT JOIN 변환 (테이블 순서 교체) SELECT g.Name AS GenreName, COUNT(t.TrackId) AS TrackCount FROM genres g LEFT JOIN tracks t ON g.GenreId = t.GenreId GROUP BY g.GenreId, g.Name; -- FULL OUTER JOIN 대체 (구버전): UNION SELECT ar.Name AS ArtistName, al.Title AS AlbumTitle FROM artists ar LEFT JOIN albums al ON ar.ArtistId = al.ArtistId UNION SELECT ar.Name AS ArtistName, al.Title AS AlbumTitle FROM artists ar RIGHT JOIN albums al ON ar.ArtistId = al.ArtistId; ON vs WHERE (OUTER JOIN에서 중요)">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://hseoooo.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "0611 SQL 심화 (집계 함수, 집합 연산자, 계층형)",
+      "item": "https://hseoooo.github.io/posts/0611_join_subquery_%EC%A0%95%EB%A6%AC/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "0611 SQL 심화 (집계 함수, 집합 연산자, 계층형)",
+  "name": "0611 SQL 심화 (집계 함수, 집합 연산자, 계층형)",
+  "description": "JOIN 심화 \u0026amp; 서브쿼리 심화 사용 DB: chinook.db (SQLite Tutorial 샘플 DB)\n1. JOIN 심화 1) EQUI JOIN / Non EQUI JOIN EQUI JOIN: = 연산자로 연결하는 등가 조인. 기본키-외래키 관계에서 주로 사용. Non EQUI JOIN: \u0026gt;, \u0026lt;, BETWEEN 등 비등가 연산자를 사용하는 조인. -- EQUI JOIN (WHERE 절) SELECT al.Title AS AlbumTitle, ar.Name AS ArtistName FROM albums al, artists ar WHERE al.ArtistId = ar.ArtistId ORDER BY al.Title; -- Non EQUI JOIN (재생시간 비교) SELECT t1.Name AS LongTrack, t1.Milliseconds AS LongMs, t2.Name AS ShortTrack, t2.Milliseconds AS ShortMs FROM tracks t1, tracks t2 WHERE t1.AlbumId = t2.AlbumId AND t1.Milliseconds \u0026gt;= 300000 AND t2.Milliseconds \u0026lt; t1.Milliseconds; 2) INNER JOIN (ON / USING / NATURAL) ON: 컬럼명이 달라도 사용 가능, 가장 일반적인 형태. USING: 동일한 이름의 컬럼에 사용. 별칭(alias) 사용 불가. NATURAL: 이름이 같은 모든 컬럼을 자동으로 등가 조인 조건으로 사용. 별칭 및 추가 조건(ON/USING/WHERE) 불가. -- ON 절 SELECT t.Name AS TrackName, g.Name AS GenreName FROM tracks t INNER JOIN genres g ON t.GenreId = g.GenreId; -- USING 절 (별칭 금지) SELECT albums.Title AS AlbumTitle, artists.Name AS ArtistName FROM albums INNER JOIN artists USING (ArtistId); -- NATURAL JOIN (공통 컬럼 자동 매칭, 별칭 금지) SELECT albums.Title AS AlbumTitle, artists.Name AS ArtistName FROM albums NATURAL JOIN artists; 3) CROSS JOIN 조인 조건 없이 두 테이블의 모든 행 조합(카테시안 곱) 생성. 결과 행 수 = 테이블A 행 수 × 테이블B 행 수. SELECT g.Name AS GenreName, m.Name AS MediaTypeName FROM genres g CROSS JOIN media_types m; 4) OUTER JOIN (LEFT / RIGHT / FULL) 종류 설명 SQLite 지원 LEFT OUTER JOIN 왼쪽 테이블 모든 행 보존, 불일치는 NULL 항상 지원 RIGHT OUTER JOIN 오른쪽 테이블 모든 행 보존 SQLite 3.39.0 이상 FULL OUTER JOIN 양쪽 모두 보존 SQLite 3.39.0 이상 버전 확인: SELECT sqlite_version(); 구버전 대안: RIGHT JOIN → 테이블 순서 바꿔 LEFT JOIN / FULL JOIN → LEFT JOIN UNION RIGHT JOIN -- LEFT JOIN: 앨범 없는 아티스트도 포함 SELECT ar.Name AS ArtistName, al.Title AS AlbumTitle FROM artists ar LEFT JOIN albums al ON ar.ArtistId = al.ArtistId; -- \u0026#34;없는 데이터\u0026#34; 찾기: LEFT JOIN + IS NULL SELECT ar.Name AS ArtistName FROM artists ar LEFT JOIN albums al ON ar.ArtistId = al.ArtistId WHERE al.AlbumId IS NULL; -- RIGHT JOIN → LEFT JOIN 변환 (테이블 순서 교체) SELECT g.Name AS GenreName, COUNT(t.TrackId) AS TrackCount FROM genres g LEFT JOIN tracks t ON g.GenreId = t.GenreId GROUP BY g.GenreId, g.Name; -- FULL OUTER JOIN 대체 (구버전): UNION SELECT ar.Name AS ArtistName, al.Title AS AlbumTitle FROM artists ar LEFT JOIN albums al ON ar.ArtistId = al.ArtistId UNION SELECT ar.Name AS ArtistName, al.Title AS AlbumTitle FROM artists ar RIGHT JOIN albums al ON ar.ArtistId = al.ArtistId; ON vs WHERE (OUTER JOIN에서 중요)\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "JOIN 심화 \u0026 서브쿼리 심화 사용 DB: chinook.db (SQLite Tutorial 샘플 DB)\n1. JOIN 심화 1) EQUI JOIN / Non EQUI JOIN EQUI JOIN: = 연산자로 연결하는 등가 조인. 기본키-외래키 관계에서 주로 사용. Non EQUI JOIN: \u003e, \u003c, BETWEEN 등 비등가 연산자를 사용하는 조인. -- EQUI JOIN (WHERE 절) SELECT al.Title AS AlbumTitle, ar.Name AS ArtistName FROM albums al, artists ar WHERE al.ArtistId = ar.ArtistId ORDER BY al.Title; -- Non EQUI JOIN (재생시간 비교) SELECT t1.Name AS LongTrack, t1.Milliseconds AS LongMs, t2.Name AS ShortTrack, t2.Milliseconds AS ShortMs FROM tracks t1, tracks t2 WHERE t1.AlbumId = t2.AlbumId AND t1.Milliseconds \u003e= 300000 AND t2.Milliseconds \u003c t1.Milliseconds; 2) INNER JOIN (ON / USING / NATURAL) ON: 컬럼명이 달라도 사용 가능, 가장 일반적인 형태. USING: 동일한 이름의 컬럼에 사용. 별칭(alias) 사용 불가. NATURAL: 이름이 같은 모든 컬럼을 자동으로 등가 조인 조건으로 사용. 별칭 및 추가 조건(ON/USING/WHERE) 불가. -- ON 절 SELECT t.Name AS TrackName, g.Name AS GenreName FROM tracks t INNER JOIN genres g ON t.GenreId = g.GenreId; -- USING 절 (별칭 금지) SELECT albums.Title AS AlbumTitle, artists.Name AS ArtistName FROM albums INNER JOIN artists USING (ArtistId); -- NATURAL JOIN (공통 컬럼 자동 매칭, 별칭 금지) SELECT albums.Title AS AlbumTitle, artists.Name AS ArtistName FROM albums NATURAL JOIN artists; 3) CROSS JOIN 조인 조건 없이 두 테이블의 모든 행 조합(카테시안 곱) 생성. 결과 행 수 = 테이블A 행 수 × 테이블B 행 수. SELECT g.Name AS GenreName, m.Name AS MediaTypeName FROM genres g CROSS JOIN media_types m; 4) OUTER JOIN (LEFT / RIGHT / FULL) 종류 설명 SQLite 지원 LEFT OUTER JOIN 왼쪽 테이블 모든 행 보존, 불일치는 NULL 항상 지원 RIGHT OUTER JOIN 오른쪽 테이블 모든 행 보존 SQLite 3.39.0 이상 FULL OUTER JOIN 양쪽 모두 보존 SQLite 3.39.0 이상 버전 확인: SELECT sqlite_version(); 구버전 대안: RIGHT JOIN → 테이블 순서 바꿔 LEFT JOIN / FULL JOIN → LEFT JOIN UNION RIGHT JOIN -- LEFT JOIN: 앨범 없는 아티스트도 포함 SELECT ar.Name AS ArtistName, al.Title AS AlbumTitle FROM artists ar LEFT JOIN albums al ON ar.ArtistId = al.ArtistId; -- \"없는 데이터\" 찾기: LEFT JOIN + IS NULL SELECT ar.Name AS ArtistName FROM artists ar LEFT JOIN albums al ON ar.ArtistId = al.ArtistId WHERE al.AlbumId IS NULL; -- RIGHT JOIN → LEFT JOIN 변환 (테이블 순서 교체) SELECT g.Name AS GenreName, COUNT(t.TrackId) AS TrackCount FROM genres g LEFT JOIN tracks t ON g.GenreId = t.GenreId GROUP BY g.GenreId, g.Name; -- FULL OUTER JOIN 대체 (구버전): UNION SELECT ar.Name AS ArtistName, al.Title AS AlbumTitle FROM artists ar LEFT JOIN albums al ON ar.ArtistId = al.ArtistId UNION SELECT ar.Name AS ArtistName, al.Title AS AlbumTitle FROM artists ar RIGHT JOIN albums al ON ar.ArtistId = al.ArtistId; ON vs WHERE (OUTER JOIN에서 중요)\nON 조건: 조인 조건 — 불일치 행도 NULL로 포함됨 WHERE 조건: 조인 후 필터링 — NULL 행도 제거됨 “짝이 없는 행\"을 찾으려면 WHERE 오른쪽테이블.키컬럼 IS NULL 패턴 사용 5) 셀프 조인 (Self Join) 동일 테이블을 두 번 사용, 반드시 별칭(alias) 필요. 계층형 데이터(상사-부하, 카테고리 부모-자식) 처리에 유용. -- 직원-관리자 관계 (계층형 LEFT JOIN 셀프 조인) SELECT e.FirstName || ' ' || e.LastName AS EmployeeName, m.FirstName || ' ' || m.LastName AS ManagerName FROM employees e LEFT JOIN employees m ON e.ReportsTo = m.EmployeeId; -- 같은 앨범 내 트랙 쌍 비교 (중복 제거: t1.TrackId \u003c t2.TrackId) SELECT t1.Name AS TrackA, t2.Name AS TrackB, ABS(t1.Milliseconds - t2.Milliseconds) AS MsDiff FROM tracks t1 JOIN tracks t2 ON t1.AlbumId = t2.AlbumId AND t1.TrackId \u003c t2.TrackId WHERE ABS(t1.Milliseconds - t2.Milliseconds) \u003c= 60000; 6) 복합 JOIN \u0026 WHERE 조건 (응용) 여러 테이블을 연결한 후 WHERE/GROUP BY/집계를 함께 사용하는 종합 패턴. -- 직원별 담당 고객 수 + 총 인보이스 합계 (다중 LEFT JOIN + 집계) SELECT e.FirstName || ' ' || e.LastName AS EmployeeName, COUNT(DISTINCT c.CustomerId) AS CustomerCount, ROUND(SUM(i.Total), 2) AS TotalSales FROM employees e LEFT JOIN customers c ON e.EmployeeId = c.SupportRepId LEFT JOIN invoices i ON c.CustomerId = i.CustomerId GROUP BY e.EmployeeId, e.FirstName, e.LastName ORDER BY TotalSales DESC; 2. 서브쿼리 심화 1) 동작 방식에 따른 분류 비연관 서브쿼리 (Un-Correlated): 메인쿼리 컬럼을 참조하지 않음 → 한 번만 실행. 연관 서브쿼리 (Correlated): 메인쿼리 컬럼을 참조 → 메인쿼리 행마다 재실행. -- 비연관: 평균 단가보다 비싼 트랙 SELECT Name, UnitPrice FROM tracks WHERE UnitPrice \u003e (SELECT AVG(UnitPrice) FROM tracks); -- 연관: 본인 앨범 평균 재생시간보다 긴 트랙 SELECT t.Name, t.Milliseconds FROM tracks t WHERE t.Milliseconds \u003e ( SELECT AVG(t2.Milliseconds) FROM tracks t2 WHERE t2.AlbumId = t.AlbumId -- 메인쿼리 참조 → 연관 ); -- 연관 EXISTS vs 비연관 IN (결과는 동일) SELECT t.Name FROM tracks t WHERE EXISTS (SELECT 1 FROM invoice_items ii WHERE ii.TrackId = t.TrackId); SELECT t.Name FROM tracks t WHERE t.TrackId IN (SELECT ii.TrackId FROM invoice_items ii); 2) 반환 데이터 형태에 따른 분류 ① 단일 행 서브쿼리 (Single Row) 결과가 1행 1컬럼 → =, \u003c, \u003e, \u003c=, \u003e= 사용. SELECT InvoiceId, CustomerId, Total FROM invoices WHERE Total \u003e (SELECT AVG(Total) FROM invoices); ② 다중 행 서브쿼리 (Multi Row) 결과가 2행 이상 → IN, NOT IN, EXISTS, NOT EXISTS 사용. ALL / ANY는 SQLite 미지원 → MAX/MIN으로 대체. -- NOT EXISTS: 앨범이 없는 아티스트 SELECT a.Name AS ArtistName FROM artists a WHERE NOT EXISTS (SELECT 1 FROM albums al WHERE al.ArtistId = a.ArtistId); -- ALL 대체(MAX): Rock 최장 트랙보다 긴 모든 트랙 SELECT Name, Milliseconds FROM tracks WHERE Milliseconds \u003e ( SELECT MAX(t.Milliseconds) FROM tracks t INNER JOIN genres g ON t.GenreId = g.GenreId WHERE g.Name = 'Rock' ); -- ANY 대체(MIN): Classical 최단 트랙보다 긴 트랙 SELECT Name, Milliseconds FROM tracks WHERE Milliseconds \u003e ( SELECT MIN(t.Milliseconds) FROM tracks t INNER JOIN genres g ON t.GenreId = g.GenreId WHERE g.Name = 'Classical' ); ③ 다중 컬럼 서브쿼리 (Multi Column) 서브쿼리가 여러 컬럼 반환 → (col1, col2) IN (서브쿼리) 형태. SQLite 지원. -- 각 앨범에서 가장 긴 트랙 (AlbumId, MAX(Milliseconds) 쌍) SELECT Name, AlbumId, Milliseconds FROM tracks WHERE (AlbumId, Milliseconds) IN ( SELECT AlbumId, MAX(Milliseconds) FROM tracks GROUP BY AlbumId ); 3) 스칼라 서브쿼리 (Scalar Subquery) 단일 컬럼 + 단일 행을 반환 → SELECT / WHERE / HAVING 절에서 사용 가능. SQLite는 DUAL 테이블이 없으므로 FROM 없이 바로 SELECT 작성 가능. -- SELECT 절에서 스칼라 서브쿼리 (장르별 트랙 수) SELECT g.Name AS GenreName, (SELECT COUNT(*) FROM tracks t WHERE t.GenreId = g.GenreId) AS TrackCount FROM genres g; -- FROM 없이 SELECT (DUAL 대체): 전체 중 Rock 비율 SELECT ROUND( CAST((SELECT COUNT(*) FROM tracks t INNER JOIN genres g ON t.GenreId = g.GenreId WHERE g.Name = 'Rock') AS REAL) / CAST((SELECT COUNT(*) FROM tracks) AS REAL), 4 ) AS RockRatio; 4) 뷰 (VIEW) 논리적으로만 존재하는 가상 테이블. CREATE VIEW ... AS SELECT ... SQLite는 CREATE OR REPLACE VIEW 미지원 → DROP VIEW IF EXISTS 후 CREATE VIEW 패턴 사용. 뷰를 기반으로 또 다른 뷰를 생성할 수 있음(뷰 위의 뷰). -- 뷰 생성 (재생성 패턴) DROP VIEW IF EXISTS view_track_full; CREATE VIEW view_track_full AS SELECT t.TrackId, t.Name AS TrackName, al.Title AS AlbumTitle, ar.Name AS ArtistName, g.Name AS GenreName FROM tracks t INNER JOIN albums al ON t.AlbumId = al.AlbumId INNER JOIN artists ar ON al.ArtistId = ar.ArtistId INNER JOIN genres g ON t.GenreId = g.GenreId; -- 뷰를 이용한 집계 SELECT GenreName, COUNT(*) AS TrackCount FROM view_track_full GROUP BY GenreName; -- 보안성: 민감 정보 제외한 뷰 DROP VIEW IF EXISTS view_customer_public; CREATE VIEW view_customer_public AS SELECT CustomerId, FirstName || ' ' || LastName AS CustomerName, Country, Email FROM customers; -- 뷰 위에 뷰 생성 DROP VIEW IF EXISTS view_customer_by_country; CREATE VIEW view_customer_by_country AS SELECT Country, COUNT(*) AS CustomerCount FROM view_customer_public GROUP BY Country; 핵심 요약 표 구분 핵심 키워드 주의사항 EQUI / Non EQUI = vs \u003e,\u003c,BETWEEN - INNER JOIN ON / USING / NATURAL USING·NATURAL은 별칭 금지 CROSS JOIN 카테시안 곱 행수 = A×B LEFT/RIGHT/FULL OUTER JOIN RIGHT/FULL은 SQLite 3.39.0+ 필요 셀프 조인 별칭 필수 계층 구조에 유용 비연관/연관 서브쿼리 메인쿼리 컬럼 참조 여부 EXISTS=연관, IN=비연관 단일/다중 행 서브쿼리 = vs IN/EXISTS ALL→MAX, ANY→MIN 대체 다중 컬럼 서브쿼리 (col1,col2) IN (...) SQLite 지원 스칼라 서브쿼리 SELECT/WHERE/HAVING DUAL 없음, FROM 생략 가능 VIEW CREATE VIEW OR REPLACE 미지원 → DROP 후 재생성 ",
+  "wordCount" : "1315",
+  "inLanguage": "en",
+  "datePublished": "2026-06-14T23:30:00+09:00",
+  "dateModified": "2026-06-14T23:30:00+09:00",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://hseoooo.github.io/posts/0611_join_subquery_%EC%A0%95%EB%A6%AC/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Joys library",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://hseoooo.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="header-nav">
+        <div class="logo">
+            <a href="https://hseoooo.github.io/" accesskey="h" title="Joys library (Alt + H)">Joys library</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu" class="menu">
+            <li>
+                <a href="https://hseoooo.github.io/categories/ai_coding/" title="AI/개발">
+                    <span>AI/개발</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://hseoooo.github.io/categories/market-analysis/" title="시장 분석">
+                    <span>시장 분석</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      0611 SQL 심화 (집계 함수, 집합 연산자, 계층형)
+    </h1>
+    <div class="post-meta">
+
+<span title='2026-06-14 23:30:00 +0900 KST'>June 14, 2026</span>
+
+</div>
+  </header> 
+  <div class="post-content md-content"><h1 id="join-심화--서브쿼리-심화">JOIN 심화 &amp; 서브쿼리 심화<a hidden class="anchor" aria-hidden="true" href="#join-심화--서브쿼리-심화">#</a></h1>
+<blockquote>
+<p>사용 DB: chinook.db (SQLite Tutorial 샘플 DB)</p>
+</blockquote>
+<hr>
+<h2 id="1-join-심화">1. JOIN 심화<a hidden class="anchor" aria-hidden="true" href="#1-join-심화">#</a></h2>
+<h3 id="1-equi-join--non-equi-join">1) EQUI JOIN / Non EQUI JOIN<a hidden class="anchor" aria-hidden="true" href="#1-equi-join--non-equi-join">#</a></h3>
+<ul>
+<li><strong>EQUI JOIN</strong>: <code>=</code> 연산자로 연결하는 등가 조인. 기본키-외래키 관계에서 주로 사용.</li>
+<li><strong>Non EQUI JOIN</strong>: <code>&gt;</code>, <code>&lt;</code>, <code>BETWEEN</code> 등 비등가 연산자를 사용하는 조인.</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- EQUI JOIN (WHERE 절)
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> al.Title <span style="color:#66d9ef">AS</span> AlbumTitle, ar.Name <span style="color:#66d9ef">AS</span> ArtistName
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> albums al, artists ar
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> al.ArtistId <span style="color:#f92672">=</span> ar.ArtistId
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> al.Title;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Non EQUI JOIN (재생시간 비교)
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> t1.Name <span style="color:#66d9ef">AS</span> LongTrack, t1.Milliseconds <span style="color:#66d9ef">AS</span> LongMs,
+</span></span><span style="display:flex;"><span>       t2.Name <span style="color:#66d9ef">AS</span> ShortTrack, t2.Milliseconds <span style="color:#66d9ef">AS</span> ShortMs
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> tracks t1, tracks t2
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> t1.AlbumId <span style="color:#f92672">=</span> t2.AlbumId
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">AND</span> t1.Milliseconds <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">300000</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">AND</span> t2.Milliseconds <span style="color:#f92672">&lt;</span>  t1.Milliseconds;
+</span></span></code></pre></div><hr>
+<h3 id="2-inner-join-on--using--natural">2) INNER JOIN (ON / USING / NATURAL)<a hidden class="anchor" aria-hidden="true" href="#2-inner-join-on--using--natural">#</a></h3>
+<ul>
+<li><strong>ON</strong>: 컬럼명이 달라도 사용 가능, 가장 일반적인 형태.</li>
+<li><strong>USING</strong>: 동일한 이름의 컬럼에 사용. 별칭(alias) 사용 불가.</li>
+<li><strong>NATURAL</strong>: 이름이 같은 모든 컬럼을 자동으로 등가 조인 조건으로 사용. 별칭 및 추가 조건(ON/USING/WHERE) 불가.</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- ON 절
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> t.Name <span style="color:#66d9ef">AS</span> TrackName, <span style="color:#66d9ef">g</span>.Name <span style="color:#66d9ef">AS</span> GenreName
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> tracks t
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">INNER</span> <span style="color:#66d9ef">JOIN</span> genres <span style="color:#66d9ef">g</span> <span style="color:#66d9ef">ON</span> t.GenreId <span style="color:#f92672">=</span> <span style="color:#66d9ef">g</span>.GenreId;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- USING 절 (별칭 금지)
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> albums.Title <span style="color:#66d9ef">AS</span> AlbumTitle, artists.Name <span style="color:#66d9ef">AS</span> ArtistName
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> albums
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">INNER</span> <span style="color:#66d9ef">JOIN</span> artists <span style="color:#66d9ef">USING</span> (ArtistId);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- NATURAL JOIN (공통 컬럼 자동 매칭, 별칭 금지)
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> albums.Title <span style="color:#66d9ef">AS</span> AlbumTitle, artists.Name <span style="color:#66d9ef">AS</span> ArtistName
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> albums
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">NATURAL</span> <span style="color:#66d9ef">JOIN</span> artists;
+</span></span></code></pre></div><hr>
+<h3 id="3-cross-join">3) CROSS JOIN<a hidden class="anchor" aria-hidden="true" href="#3-cross-join">#</a></h3>
+<ul>
+<li>조인 조건 없이 두 테이블의 모든 행 조합(카테시안 곱) 생성.</li>
+<li>결과 행 수 = 테이블A 행 수 × 테이블B 행 수.</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> <span style="color:#66d9ef">g</span>.Name <span style="color:#66d9ef">AS</span> GenreName, m.Name <span style="color:#66d9ef">AS</span> MediaTypeName
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> genres <span style="color:#66d9ef">g</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">CROSS</span> <span style="color:#66d9ef">JOIN</span> media_types m;
+</span></span></code></pre></div><hr>
+<h3 id="4-outer-join-left--right--full">4) OUTER JOIN (LEFT / RIGHT / FULL)<a hidden class="anchor" aria-hidden="true" href="#4-outer-join-left--right--full">#</a></h3>
+<table>
+	<thead>
+			<tr>
+					<th>종류</th>
+					<th>설명</th>
+					<th>SQLite 지원</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>LEFT OUTER JOIN</td>
+					<td>왼쪽 테이블 모든 행 보존, 불일치는 NULL</td>
+					<td>항상 지원</td>
+			</tr>
+			<tr>
+					<td>RIGHT OUTER JOIN</td>
+					<td>오른쪽 테이블 모든 행 보존</td>
+					<td>SQLite 3.39.0 이상</td>
+			</tr>
+			<tr>
+					<td>FULL OUTER JOIN</td>
+					<td>양쪽 모두 보존</td>
+					<td>SQLite 3.39.0 이상</td>
+			</tr>
+	</tbody>
+</table>
+<ul>
+<li>버전 확인: <code>SELECT sqlite_version();</code></li>
+<li>구버전 대안: RIGHT JOIN → 테이블 순서 바꿔 LEFT JOIN / FULL JOIN → LEFT JOIN UNION RIGHT JOIN</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- LEFT JOIN: 앨범 없는 아티스트도 포함
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> ar.Name <span style="color:#66d9ef">AS</span> ArtistName, al.Title <span style="color:#66d9ef">AS</span> AlbumTitle
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> artists ar
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">LEFT</span> <span style="color:#66d9ef">JOIN</span> albums al <span style="color:#66d9ef">ON</span> ar.ArtistId <span style="color:#f92672">=</span> al.ArtistId;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- &#34;없는 데이터&#34; 찾기: LEFT JOIN + IS NULL
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> ar.Name <span style="color:#66d9ef">AS</span> ArtistName
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> artists ar
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">LEFT</span> <span style="color:#66d9ef">JOIN</span> albums al <span style="color:#66d9ef">ON</span> ar.ArtistId <span style="color:#f92672">=</span> al.ArtistId
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> al.AlbumId <span style="color:#66d9ef">IS</span> <span style="color:#66d9ef">NULL</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- RIGHT JOIN → LEFT JOIN 변환 (테이블 순서 교체)
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> <span style="color:#66d9ef">g</span>.Name <span style="color:#66d9ef">AS</span> GenreName, <span style="color:#66d9ef">COUNT</span>(t.TrackId) <span style="color:#66d9ef">AS</span> TrackCount
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> genres <span style="color:#66d9ef">g</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">LEFT</span> <span style="color:#66d9ef">JOIN</span> tracks t <span style="color:#66d9ef">ON</span> <span style="color:#66d9ef">g</span>.GenreId <span style="color:#f92672">=</span> t.GenreId
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">GROUP</span> <span style="color:#66d9ef">BY</span> <span style="color:#66d9ef">g</span>.GenreId, <span style="color:#66d9ef">g</span>.Name;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- FULL OUTER JOIN 대체 (구버전): UNION
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> ar.Name <span style="color:#66d9ef">AS</span> ArtistName, al.Title <span style="color:#66d9ef">AS</span> AlbumTitle
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> artists ar <span style="color:#66d9ef">LEFT</span> <span style="color:#66d9ef">JOIN</span> albums al <span style="color:#66d9ef">ON</span> ar.ArtistId <span style="color:#f92672">=</span> al.ArtistId
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">UNION</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> ar.Name <span style="color:#66d9ef">AS</span> ArtistName, al.Title <span style="color:#66d9ef">AS</span> AlbumTitle
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> artists ar <span style="color:#66d9ef">RIGHT</span> <span style="color:#66d9ef">JOIN</span> albums al <span style="color:#66d9ef">ON</span> ar.ArtistId <span style="color:#f92672">=</span> al.ArtistId;
+</span></span></code></pre></div><blockquote>
+<p><strong>ON vs WHERE (OUTER JOIN에서 중요)</strong></p>
+<ul>
+<li>ON 조건: 조인 조건 — 불일치 행도 NULL로 포함됨</li>
+<li>WHERE 조건: 조인 후 필터링 — NULL 행도 제거됨</li>
+<li>&ldquo;짝이 없는 행&quot;을 찾으려면 <code>WHERE 오른쪽테이블.키컬럼 IS NULL</code> 패턴 사용</li>
+</ul>
+</blockquote>
+<hr>
+<h3 id="5-셀프-조인-self-join">5) 셀프 조인 (Self Join)<a hidden class="anchor" aria-hidden="true" href="#5-셀프-조인-self-join">#</a></h3>
+<ul>
+<li>동일 테이블을 두 번 사용, 반드시 별칭(alias) 필요.</li>
+<li>계층형 데이터(상사-부하, 카테고리 부모-자식) 처리에 유용.</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- 직원-관리자 관계 (계층형 LEFT JOIN 셀프 조인)
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> e.FirstName <span style="color:#f92672">||</span> <span style="color:#e6db74">&#39; &#39;</span> <span style="color:#f92672">||</span> e.LastName <span style="color:#66d9ef">AS</span> EmployeeName,
+</span></span><span style="display:flex;"><span>       m.FirstName <span style="color:#f92672">||</span> <span style="color:#e6db74">&#39; &#39;</span> <span style="color:#f92672">||</span> m.LastName <span style="color:#66d9ef">AS</span> ManagerName
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> employees e
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">LEFT</span> <span style="color:#66d9ef">JOIN</span> employees m <span style="color:#66d9ef">ON</span> e.ReportsTo <span style="color:#f92672">=</span> m.EmployeeId;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- 같은 앨범 내 트랙 쌍 비교 (중복 제거: t1.TrackId &lt; t2.TrackId)
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> t1.Name <span style="color:#66d9ef">AS</span> TrackA, t2.Name <span style="color:#66d9ef">AS</span> TrackB,
+</span></span><span style="display:flex;"><span>       <span style="color:#66d9ef">ABS</span>(t1.Milliseconds <span style="color:#f92672">-</span> t2.Milliseconds) <span style="color:#66d9ef">AS</span> MsDiff
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> tracks t1
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">JOIN</span> tracks t2
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">ON</span> t1.AlbumId <span style="color:#f92672">=</span> t2.AlbumId <span style="color:#66d9ef">AND</span> t1.TrackId <span style="color:#f92672">&lt;</span> t2.TrackId
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> <span style="color:#66d9ef">ABS</span>(t1.Milliseconds <span style="color:#f92672">-</span> t2.Milliseconds) <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">60000</span>;
+</span></span></code></pre></div><hr>
+<h3 id="6-복합-join--where-조건-응용">6) 복합 JOIN &amp; WHERE 조건 (응용)<a hidden class="anchor" aria-hidden="true" href="#6-복합-join--where-조건-응용">#</a></h3>
+<ul>
+<li>여러 테이블을 연결한 후 WHERE/GROUP BY/집계를 함께 사용하는 종합 패턴.</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- 직원별 담당 고객 수 + 총 인보이스 합계 (다중 LEFT JOIN + 집계)
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> e.FirstName <span style="color:#f92672">||</span> <span style="color:#e6db74">&#39; &#39;</span> <span style="color:#f92672">||</span> e.LastName <span style="color:#66d9ef">AS</span> EmployeeName,
+</span></span><span style="display:flex;"><span>       <span style="color:#66d9ef">COUNT</span>(<span style="color:#66d9ef">DISTINCT</span> <span style="color:#66d9ef">c</span>.CustomerId) <span style="color:#66d9ef">AS</span> CustomerCount,
+</span></span><span style="display:flex;"><span>       ROUND(<span style="color:#66d9ef">SUM</span>(i.Total), <span style="color:#ae81ff">2</span>) <span style="color:#66d9ef">AS</span> TotalSales
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> employees e
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">LEFT</span> <span style="color:#66d9ef">JOIN</span> customers <span style="color:#66d9ef">c</span> <span style="color:#66d9ef">ON</span> e.EmployeeId <span style="color:#f92672">=</span> <span style="color:#66d9ef">c</span>.SupportRepId
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">LEFT</span> <span style="color:#66d9ef">JOIN</span> invoices  i <span style="color:#66d9ef">ON</span> <span style="color:#66d9ef">c</span>.CustomerId <span style="color:#f92672">=</span> i.CustomerId
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">GROUP</span> <span style="color:#66d9ef">BY</span> e.EmployeeId, e.FirstName, e.LastName
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> TotalSales <span style="color:#66d9ef">DESC</span>;
+</span></span></code></pre></div><hr>
+<h2 id="2-서브쿼리-심화">2. 서브쿼리 심화<a hidden class="anchor" aria-hidden="true" href="#2-서브쿼리-심화">#</a></h2>
+<h3 id="1-동작-방식에-따른-분류">1) 동작 방식에 따른 분류<a hidden class="anchor" aria-hidden="true" href="#1-동작-방식에-따른-분류">#</a></h3>
+<ul>
+<li><strong>비연관 서브쿼리 (Un-Correlated)</strong>: 메인쿼리 컬럼을 참조하지 않음 → 한 번만 실행.</li>
+<li><strong>연관 서브쿼리 (Correlated)</strong>: 메인쿼리 컬럼을 참조 → 메인쿼리 행마다 재실행.</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- 비연관: 평균 단가보다 비싼 트랙
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> Name, UnitPrice
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> tracks
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> UnitPrice <span style="color:#f92672">&gt;</span> (<span style="color:#66d9ef">SELECT</span> <span style="color:#66d9ef">AVG</span>(UnitPrice) <span style="color:#66d9ef">FROM</span> tracks);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- 연관: 본인 앨범 평균 재생시간보다 긴 트랙
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> t.Name, t.Milliseconds
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> tracks t
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> t.Milliseconds <span style="color:#f92672">&gt;</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">SELECT</span> <span style="color:#66d9ef">AVG</span>(t2.Milliseconds)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">FROM</span> tracks t2
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">WHERE</span> t2.AlbumId <span style="color:#f92672">=</span> t.AlbumId   <span style="color:#75715e">-- 메인쿼리 참조 → 연관
+</span></span></span><span style="display:flex;"><span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- 연관 EXISTS vs 비연관 IN (결과는 동일)
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> t.Name <span style="color:#66d9ef">FROM</span> tracks t
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> <span style="color:#66d9ef">EXISTS</span> (<span style="color:#66d9ef">SELECT</span> <span style="color:#ae81ff">1</span> <span style="color:#66d9ef">FROM</span> invoice_items ii <span style="color:#66d9ef">WHERE</span> ii.TrackId <span style="color:#f92672">=</span> t.TrackId);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> t.Name <span style="color:#66d9ef">FROM</span> tracks t
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> t.TrackId <span style="color:#66d9ef">IN</span> (<span style="color:#66d9ef">SELECT</span> ii.TrackId <span style="color:#66d9ef">FROM</span> invoice_items ii);
+</span></span></code></pre></div><hr>
+<h3 id="2-반환-데이터-형태에-따른-분류">2) 반환 데이터 형태에 따른 분류<a hidden class="anchor" aria-hidden="true" href="#2-반환-데이터-형태에-따른-분류">#</a></h3>
+<h4 id="-단일-행-서브쿼리-single-row">① 단일 행 서브쿼리 (Single Row)<a hidden class="anchor" aria-hidden="true" href="#-단일-행-서브쿼리-single-row">#</a></h4>
+<ul>
+<li>결과가 1행 1컬럼 → <code>=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code> 사용.</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> InvoiceId, CustomerId, Total
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> invoices
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> Total <span style="color:#f92672">&gt;</span> (<span style="color:#66d9ef">SELECT</span> <span style="color:#66d9ef">AVG</span>(Total) <span style="color:#66d9ef">FROM</span> invoices);
+</span></span></code></pre></div><h4 id="-다중-행-서브쿼리-multi-row">② 다중 행 서브쿼리 (Multi Row)<a hidden class="anchor" aria-hidden="true" href="#-다중-행-서브쿼리-multi-row">#</a></h4>
+<ul>
+<li>결과가 2행 이상 → <code>IN</code>, <code>NOT IN</code>, <code>EXISTS</code>, <code>NOT EXISTS</code> 사용.</li>
+<li><strong>ALL / ANY는 SQLite 미지원</strong> → <code>MAX</code>/<code>MIN</code>으로 대체.</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- NOT EXISTS: 앨범이 없는 아티스트
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> a.Name <span style="color:#66d9ef">AS</span> ArtistName
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> artists a
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">EXISTS</span> (<span style="color:#66d9ef">SELECT</span> <span style="color:#ae81ff">1</span> <span style="color:#66d9ef">FROM</span> albums al <span style="color:#66d9ef">WHERE</span> al.ArtistId <span style="color:#f92672">=</span> a.ArtistId);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- ALL 대체(MAX): Rock 최장 트랙보다 긴 모든 트랙
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> Name, Milliseconds
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> tracks
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> Milliseconds <span style="color:#f92672">&gt;</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">SELECT</span> <span style="color:#66d9ef">MAX</span>(t.Milliseconds)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">FROM</span> tracks t <span style="color:#66d9ef">INNER</span> <span style="color:#66d9ef">JOIN</span> genres <span style="color:#66d9ef">g</span> <span style="color:#66d9ef">ON</span> t.GenreId <span style="color:#f92672">=</span> <span style="color:#66d9ef">g</span>.GenreId
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">WHERE</span> <span style="color:#66d9ef">g</span>.Name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;Rock&#39;</span>
+</span></span><span style="display:flex;"><span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- ANY 대체(MIN): Classical 최단 트랙보다 긴 트랙
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> Name, Milliseconds
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> tracks
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> Milliseconds <span style="color:#f92672">&gt;</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">SELECT</span> <span style="color:#66d9ef">MIN</span>(t.Milliseconds)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">FROM</span> tracks t <span style="color:#66d9ef">INNER</span> <span style="color:#66d9ef">JOIN</span> genres <span style="color:#66d9ef">g</span> <span style="color:#66d9ef">ON</span> t.GenreId <span style="color:#f92672">=</span> <span style="color:#66d9ef">g</span>.GenreId
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">WHERE</span> <span style="color:#66d9ef">g</span>.Name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;Classical&#39;</span>
+</span></span><span style="display:flex;"><span>);
+</span></span></code></pre></div><h4 id="-다중-컬럼-서브쿼리-multi-column">③ 다중 컬럼 서브쿼리 (Multi Column)<a hidden class="anchor" aria-hidden="true" href="#-다중-컬럼-서브쿼리-multi-column">#</a></h4>
+<ul>
+<li>서브쿼리가 여러 컬럼 반환 → <code>(col1, col2) IN (서브쿼리)</code> 형태. SQLite 지원.</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- 각 앨범에서 가장 긴 트랙 (AlbumId, MAX(Milliseconds) 쌍)
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> Name, AlbumId, Milliseconds
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> tracks
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> (AlbumId, Milliseconds) <span style="color:#66d9ef">IN</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">SELECT</span> AlbumId, <span style="color:#66d9ef">MAX</span>(Milliseconds)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">FROM</span> tracks
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">GROUP</span> <span style="color:#66d9ef">BY</span> AlbumId
+</span></span><span style="display:flex;"><span>);
+</span></span></code></pre></div><hr>
+<h3 id="3-스칼라-서브쿼리-scalar-subquery">3) 스칼라 서브쿼리 (Scalar Subquery)<a hidden class="anchor" aria-hidden="true" href="#3-스칼라-서브쿼리-scalar-subquery">#</a></h3>
+<ul>
+<li>단일 컬럼 + 단일 행을 반환 → SELECT / WHERE / HAVING 절에서 사용 가능.</li>
+<li>SQLite는 DUAL 테이블이 없으므로 <code>FROM</code> 없이 바로 <code>SELECT</code> 작성 가능.</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- SELECT 절에서 스칼라 서브쿼리 (장르별 트랙 수)
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> <span style="color:#66d9ef">g</span>.Name <span style="color:#66d9ef">AS</span> GenreName,
+</span></span><span style="display:flex;"><span>       (<span style="color:#66d9ef">SELECT</span> <span style="color:#66d9ef">COUNT</span>(<span style="color:#f92672">*</span>) <span style="color:#66d9ef">FROM</span> tracks t <span style="color:#66d9ef">WHERE</span> t.GenreId <span style="color:#f92672">=</span> <span style="color:#66d9ef">g</span>.GenreId) <span style="color:#66d9ef">AS</span> TrackCount
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> genres <span style="color:#66d9ef">g</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- FROM 없이 SELECT (DUAL 대체): 전체 중 Rock 비율
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> ROUND(
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">CAST</span>((<span style="color:#66d9ef">SELECT</span> <span style="color:#66d9ef">COUNT</span>(<span style="color:#f92672">*</span>) <span style="color:#66d9ef">FROM</span> tracks t <span style="color:#66d9ef">INNER</span> <span style="color:#66d9ef">JOIN</span> genres <span style="color:#66d9ef">g</span> <span style="color:#66d9ef">ON</span> t.GenreId <span style="color:#f92672">=</span> <span style="color:#66d9ef">g</span>.GenreId <span style="color:#66d9ef">WHERE</span> <span style="color:#66d9ef">g</span>.Name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;Rock&#39;</span>) <span style="color:#66d9ef">AS</span> REAL)
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">/</span> <span style="color:#66d9ef">CAST</span>((<span style="color:#66d9ef">SELECT</span> <span style="color:#66d9ef">COUNT</span>(<span style="color:#f92672">*</span>) <span style="color:#66d9ef">FROM</span> tracks) <span style="color:#66d9ef">AS</span> REAL), <span style="color:#ae81ff">4</span>
+</span></span><span style="display:flex;"><span>) <span style="color:#66d9ef">AS</span> RockRatio;
+</span></span></code></pre></div><hr>
+<h3 id="4-뷰-view">4) 뷰 (VIEW)<a hidden class="anchor" aria-hidden="true" href="#4-뷰-view">#</a></h3>
+<ul>
+<li>논리적으로만 존재하는 가상 테이블. <code>CREATE VIEW ... AS SELECT ...</code></li>
+<li><strong>SQLite는 <code>CREATE OR REPLACE VIEW</code> 미지원</strong> → <code>DROP VIEW IF EXISTS</code> 후 <code>CREATE VIEW</code> 패턴 사용.</li>
+<li>뷰를 기반으로 또 다른 뷰를 생성할 수 있음(뷰 위의 뷰).</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- 뷰 생성 (재생성 패턴)
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">DROP</span> <span style="color:#66d9ef">VIEW</span> <span style="color:#66d9ef">IF</span> <span style="color:#66d9ef">EXISTS</span> view_track_full;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">VIEW</span> view_track_full <span style="color:#66d9ef">AS</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> t.TrackId, t.Name <span style="color:#66d9ef">AS</span> TrackName, al.Title <span style="color:#66d9ef">AS</span> AlbumTitle,
+</span></span><span style="display:flex;"><span>       ar.Name <span style="color:#66d9ef">AS</span> ArtistName, <span style="color:#66d9ef">g</span>.Name <span style="color:#66d9ef">AS</span> GenreName
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> tracks t
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">INNER</span> <span style="color:#66d9ef">JOIN</span> albums  al <span style="color:#66d9ef">ON</span> t.AlbumId  <span style="color:#f92672">=</span> al.AlbumId
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">INNER</span> <span style="color:#66d9ef">JOIN</span> artists ar <span style="color:#66d9ef">ON</span> al.ArtistId <span style="color:#f92672">=</span> ar.ArtistId
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">INNER</span> <span style="color:#66d9ef">JOIN</span> genres  <span style="color:#66d9ef">g</span>  <span style="color:#66d9ef">ON</span> t.GenreId  <span style="color:#f92672">=</span> <span style="color:#66d9ef">g</span>.GenreId;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- 뷰를 이용한 집계
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> GenreName, <span style="color:#66d9ef">COUNT</span>(<span style="color:#f92672">*</span>) <span style="color:#66d9ef">AS</span> TrackCount
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> view_track_full
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">GROUP</span> <span style="color:#66d9ef">BY</span> GenreName;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- 보안성: 민감 정보 제외한 뷰
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">DROP</span> <span style="color:#66d9ef">VIEW</span> <span style="color:#66d9ef">IF</span> <span style="color:#66d9ef">EXISTS</span> view_customer_public;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">VIEW</span> view_customer_public <span style="color:#66d9ef">AS</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> CustomerId, FirstName <span style="color:#f92672">||</span> <span style="color:#e6db74">&#39; &#39;</span> <span style="color:#f92672">||</span> LastName <span style="color:#66d9ef">AS</span> CustomerName, Country, Email
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> customers;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- 뷰 위에 뷰 생성
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">DROP</span> <span style="color:#66d9ef">VIEW</span> <span style="color:#66d9ef">IF</span> <span style="color:#66d9ef">EXISTS</span> view_customer_by_country;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">VIEW</span> view_customer_by_country <span style="color:#66d9ef">AS</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> Country, <span style="color:#66d9ef">COUNT</span>(<span style="color:#f92672">*</span>) <span style="color:#66d9ef">AS</span> CustomerCount
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> view_customer_public
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">GROUP</span> <span style="color:#66d9ef">BY</span> Country;
+</span></span></code></pre></div><hr>
+<h2 id="핵심-요약-표">핵심 요약 표<a hidden class="anchor" aria-hidden="true" href="#핵심-요약-표">#</a></h2>
+<table>
+	<thead>
+			<tr>
+					<th>구분</th>
+					<th>핵심 키워드</th>
+					<th>주의사항</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>EQUI / Non EQUI</td>
+					<td><code>=</code> vs <code>&gt;,&lt;,BETWEEN</code></td>
+					<td>-</td>
+			</tr>
+			<tr>
+					<td>INNER JOIN</td>
+					<td>ON / USING / NATURAL</td>
+					<td>USING·NATURAL은 별칭 금지</td>
+			</tr>
+			<tr>
+					<td>CROSS JOIN</td>
+					<td>카테시안 곱</td>
+					<td>행수 = A×B</td>
+			</tr>
+			<tr>
+					<td>LEFT/RIGHT/FULL</td>
+					<td>OUTER JOIN</td>
+					<td>RIGHT/FULL은 SQLite 3.39.0+ 필요</td>
+			</tr>
+			<tr>
+					<td>셀프 조인</td>
+					<td>별칭 필수</td>
+					<td>계층 구조에 유용</td>
+			</tr>
+			<tr>
+					<td>비연관/연관 서브쿼리</td>
+					<td>메인쿼리 컬럼 참조 여부</td>
+					<td>EXISTS=연관, IN=비연관</td>
+			</tr>
+			<tr>
+					<td>단일/다중 행 서브쿼리</td>
+					<td><code>=</code> vs <code>IN/EXISTS</code></td>
+					<td>ALL→MAX, ANY→MIN 대체</td>
+			</tr>
+			<tr>
+					<td>다중 컬럼 서브쿼리</td>
+					<td><code>(col1,col2) IN (...)</code></td>
+					<td>SQLite 지원</td>
+			</tr>
+			<tr>
+					<td>스칼라 서브쿼리</td>
+					<td>SELECT/WHERE/HAVING</td>
+					<td>DUAL 없음, FROM 생략 가능</td>
+			</tr>
+			<tr>
+					<td>VIEW</td>
+					<td>CREATE VIEW</td>
+					<td>OR REPLACE 미지원 → DROP 후 재생성</td>
+			</tr>
+	</tbody>
+</table>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="https://hseoooo.github.io/">Joys library</a></span> · 
+
+    
+    
+    <span>
+        Powered by
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var toplink = document.getElementById("top-link");
+    window.onscroll = function () {
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
+        } else {
+            toplink.classList.add("hidden");
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

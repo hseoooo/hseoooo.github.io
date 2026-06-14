@@ -6,8 +6,172 @@
     <description>Recent content in Posts on Joys library</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 10 Jun 2026 22:20:00 +0900</lastBuildDate>
+    <lastBuildDate>Sun, 14 Jun 2026 23:30:00 +0900</lastBuildDate>
     <atom:link href="https://hseoooo.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>0611 SQL 심화 (집계 함수, 집합 연산자, 계층형)</title>
+      <link>https://hseoooo.github.io/posts/0611_join_subquery_%EC%A0%95%EB%A6%AC/</link>
+      <pubDate>Sun, 14 Jun 2026 23:30:00 +0900</pubDate>
+      <guid>https://hseoooo.github.io/posts/0611_join_subquery_%EC%A0%95%EB%A6%AC/</guid>
+      <description>&lt;h1 id=&#34;join-심화--서브쿼리-심화&#34;&gt;JOIN 심화 &amp;amp; 서브쿼리 심화&lt;/h1&gt;
+&lt;blockquote&gt;
+&lt;p&gt;사용 DB: chinook.db (SQLite Tutorial 샘플 DB)&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;1-join-심화&#34;&gt;1. JOIN 심화&lt;/h2&gt;
+&lt;h3 id=&#34;1-equi-join--non-equi-join&#34;&gt;1) EQUI JOIN / Non EQUI JOIN&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;EQUI JOIN&lt;/strong&gt;: &lt;code&gt;=&lt;/code&gt; 연산자로 연결하는 등가 조인. 기본키-외래키 관계에서 주로 사용.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Non EQUI JOIN&lt;/strong&gt;: &lt;code&gt;&amp;gt;&lt;/code&gt;, &lt;code&gt;&amp;lt;&lt;/code&gt;, &lt;code&gt;BETWEEN&lt;/code&gt; 등 비등가 연산자를 사용하는 조인.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- EQUI JOIN (WHERE 절)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; al.Title &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; AlbumTitle, ar.Name &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; ArtistName
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; albums al, artists ar
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;WHERE&lt;/span&gt; al.ArtistId &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; ar.ArtistId
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;ORDER&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;BY&lt;/span&gt; al.Title;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- Non EQUI JOIN (재생시간 비교)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; t1.Name &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; LongTrack, t1.Milliseconds &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; LongMs,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;       t2.Name &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; ShortTrack, t2.Milliseconds &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; ShortMs
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; tracks t1, tracks t2
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;WHERE&lt;/span&gt; t1.AlbumId &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; t2.AlbumId
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; t1.Milliseconds &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;300000&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;AND&lt;/span&gt; t2.Milliseconds &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;  t1.Milliseconds;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h3 id=&#34;2-inner-join-on--using--natural&#34;&gt;2) INNER JOIN (ON / USING / NATURAL)&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;ON&lt;/strong&gt;: 컬럼명이 달라도 사용 가능, 가장 일반적인 형태.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;USING&lt;/strong&gt;: 동일한 이름의 컬럼에 사용. 별칭(alias) 사용 불가.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;NATURAL&lt;/strong&gt;: 이름이 같은 모든 컬럼을 자동으로 등가 조인 조건으로 사용. 별칭 및 추가 조건(ON/USING/WHERE) 불가.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- ON 절
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; t.Name &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; TrackName, &lt;span style=&#34;color:#66d9ef&#34;&gt;g&lt;/span&gt;.Name &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; GenreName
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; tracks t
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;INNER&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;JOIN&lt;/span&gt; genres &lt;span style=&#34;color:#66d9ef&#34;&gt;g&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;ON&lt;/span&gt; t.GenreId &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;g&lt;/span&gt;.GenreId;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- USING 절 (별칭 금지)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; albums.Title &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; AlbumTitle, artists.Name &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; ArtistName
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; albums
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;INNER&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;JOIN&lt;/span&gt; artists &lt;span style=&#34;color:#66d9ef&#34;&gt;USING&lt;/span&gt; (ArtistId);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- NATURAL JOIN (공통 컬럼 자동 매칭, 별칭 금지)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; albums.Title &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; AlbumTitle, artists.Name &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; ArtistName
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; albums
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;NATURAL&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;JOIN&lt;/span&gt; artists;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h3 id=&#34;3-cross-join&#34;&gt;3) CROSS JOIN&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;조인 조건 없이 두 테이블의 모든 행 조합(카테시안 곱) 생성.&lt;/li&gt;
+&lt;li&gt;결과 행 수 = 테이블A 행 수 × 테이블B 행 수.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;g&lt;/span&gt;.Name &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; GenreName, m.Name &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; MediaTypeName
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; genres &lt;span style=&#34;color:#66d9ef&#34;&gt;g&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;CROSS&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;JOIN&lt;/span&gt; media_types m;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h3 id=&#34;4-outer-join-left--right--full&#34;&gt;4) OUTER JOIN (LEFT / RIGHT / FULL)&lt;/h3&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;종류&lt;/th&gt;
+					&lt;th&gt;설명&lt;/th&gt;
+					&lt;th&gt;SQLite 지원&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;LEFT OUTER JOIN&lt;/td&gt;
+					&lt;td&gt;왼쪽 테이블 모든 행 보존, 불일치는 NULL&lt;/td&gt;
+					&lt;td&gt;항상 지원&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;RIGHT OUTER JOIN&lt;/td&gt;
+					&lt;td&gt;오른쪽 테이블 모든 행 보존&lt;/td&gt;
+					&lt;td&gt;SQLite 3.39.0 이상&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;FULL OUTER JOIN&lt;/td&gt;
+					&lt;td&gt;양쪽 모두 보존&lt;/td&gt;
+					&lt;td&gt;SQLite 3.39.0 이상&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;ul&gt;
+&lt;li&gt;버전 확인: &lt;code&gt;SELECT sqlite_version();&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;구버전 대안: RIGHT JOIN → 테이블 순서 바꿔 LEFT JOIN / FULL JOIN → LEFT JOIN UNION RIGHT JOIN&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- LEFT JOIN: 앨범 없는 아티스트도 포함
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; ar.Name &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; ArtistName, al.Title &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; AlbumTitle
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; artists ar
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;LEFT&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;JOIN&lt;/span&gt; albums al &lt;span style=&#34;color:#66d9ef&#34;&gt;ON&lt;/span&gt; ar.ArtistId &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; al.ArtistId;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- &amp;#34;없는 데이터&amp;#34; 찾기: LEFT JOIN + IS NULL
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; ar.Name &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; ArtistName
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; artists ar
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;LEFT&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;JOIN&lt;/span&gt; albums al &lt;span style=&#34;color:#66d9ef&#34;&gt;ON&lt;/span&gt; ar.ArtistId &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; al.ArtistId
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;WHERE&lt;/span&gt; al.AlbumId &lt;span style=&#34;color:#66d9ef&#34;&gt;IS&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;NULL&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- RIGHT JOIN → LEFT JOIN 변환 (테이블 순서 교체)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;g&lt;/span&gt;.Name &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; GenreName, &lt;span style=&#34;color:#66d9ef&#34;&gt;COUNT&lt;/span&gt;(t.TrackId) &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; TrackCount
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; genres &lt;span style=&#34;color:#66d9ef&#34;&gt;g&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;LEFT&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;JOIN&lt;/span&gt; tracks t &lt;span style=&#34;color:#66d9ef&#34;&gt;ON&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;g&lt;/span&gt;.GenreId &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; t.GenreId
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;GROUP&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;BY&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;g&lt;/span&gt;.GenreId, &lt;span style=&#34;color:#66d9ef&#34;&gt;g&lt;/span&gt;.Name;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;-- FULL OUTER JOIN 대체 (구버전): UNION
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; ar.Name &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; ArtistName, al.Title &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; AlbumTitle
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; artists ar &lt;span style=&#34;color:#66d9ef&#34;&gt;LEFT&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;JOIN&lt;/span&gt; albums al &lt;span style=&#34;color:#66d9ef&#34;&gt;ON&lt;/span&gt; ar.ArtistId &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; al.ArtistId
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;UNION&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; ar.Name &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; ArtistName, al.Title &lt;span style=&#34;color:#66d9ef&#34;&gt;AS&lt;/span&gt; AlbumTitle
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; artists ar &lt;span style=&#34;color:#66d9ef&#34;&gt;RIGHT&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;JOIN&lt;/span&gt; albums al &lt;span style=&#34;color:#66d9ef&#34;&gt;ON&lt;/span&gt; ar.ArtistId &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; al.ArtistId;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;ON vs WHERE (OUTER JOIN에서 중요)&lt;/strong&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>0612 SQL 심화 (집계 함수, 집합 연산자, 계층형)</title>
+      <link>https://hseoooo.github.io/posts/0611_%EC%9C%88%EB%8F%84%EC%9A%B0%ED%95%A8%EC%88%98_%EA%B7%B8%EB%A3%B9%ED%95%A8%EC%88%98_%EC%A0%95%EB%A6%AC/</link>
+      <pubDate>Sun, 14 Jun 2026 23:20:00 +0900</pubDate>
+      <guid>https://hseoooo.github.io/posts/0611_%EC%9C%88%EB%8F%84%EC%9A%B0%ED%95%A8%EC%88%98_%EA%B7%B8%EB%A3%B9%ED%95%A8%EC%88%98_%EC%A0%95%EB%A6%AC/</guid>
+      <description>&lt;h1 id=&#34;그룹-함수--윈도우-함수-정리&#34;&gt;그룹 함수 &amp;amp; 윈도우 함수 정리&lt;/h1&gt;
+&lt;p&gt;대상 DB: &lt;code&gt;chinook.db&lt;/code&gt; (SQLite)&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;1-윈도우-함수와-그룹-함수의-개념-차이&#34;&gt;1. 윈도우 함수와 그룹 함수의 개념 차이&lt;/h2&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;구분&lt;/th&gt;
+					&lt;th&gt;그룹 함수 (GROUP BY)&lt;/th&gt;
+					&lt;th&gt;윈도우 함수 (OVER)&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;행의 수&lt;/td&gt;
+					&lt;td&gt;그룹별로 행이 &lt;strong&gt;축소(집계)&lt;/strong&gt; 됨&lt;/td&gt;
+					&lt;td&gt;원본 행 수가 &lt;strong&gt;그대로 유지&lt;/strong&gt;됨&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;결과 형태&lt;/td&gt;
+					&lt;td&gt;그룹당 1개 행&lt;/td&gt;
+					&lt;td&gt;각 행마다 집계값이 추가됨&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;용도&lt;/td&gt;
+					&lt;td&gt;전체를 요약/축약&lt;/td&gt;
+					&lt;td&gt;개별 데이터 + 집계 정보를 동시에 비교&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;예시&lt;/td&gt;
+					&lt;td&gt;&amp;ldquo;국가별 평균 구매액 한 줄씩&amp;rdquo;&lt;/td&gt;
+					&lt;td&gt;&amp;ldquo;각 주문 옆에 그 국가의 평균 구매액 표시&amp;rdquo;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;핵심 키워드&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;GROUP BY&lt;/code&gt;, &lt;code&gt;HAVING&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;OVER()&lt;/code&gt;, &lt;code&gt;PARTITION BY&lt;/code&gt;, &lt;code&gt;ORDER BY&lt;/code&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;한 줄 요약&lt;/strong&gt;: 그룹 함수는 &amp;ldquo;여러 행 → 한 행으로 압축&amp;quot;하지만, 윈도우 함수는 &amp;ldquo;각 행은 유지한 채 그 행이 속한 그룹의 통계치를 함께 보여준다.&amp;rdquo;&lt;/p&gt;</description>
+    </item>
     <item>
       <title>0610 SQL 다수 테이블 제어 및 서브쿼리</title>
       <link>https://hseoooo.github.io/posts/%EC%98%A4%EC%A0%84_%EB%8B%A4%EC%88%98%ED%85%8C%EC%9D%B4%EB%B8%94_%EC%84%9C%EB%B8%8C%EC%BF%BC%EB%A6%AC-37b0251fbd38812181e9cf934e62f45b/</link>

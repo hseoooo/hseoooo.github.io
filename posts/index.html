@@ -141,6 +141,38 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">0611 SQL 심화 (집계 함수, 집합 연산자, 계층형)
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>JOIN 심화 &amp; 서브쿼리 심화 사용 DB: chinook.db (SQLite Tutorial 샘플 DB)
+1. JOIN 심화 1) EQUI JOIN / Non EQUI JOIN EQUI JOIN: = 연산자로 연결하는 등가 조인. 기본키-외래키 관계에서 주로 사용. Non EQUI JOIN: &gt;, &lt;, BETWEEN 등 비등가 연산자를 사용하는 조인. -- EQUI JOIN (WHERE 절) SELECT al.Title AS AlbumTitle, ar.Name AS ArtistName FROM albums al, artists ar WHERE al.ArtistId = ar.ArtistId ORDER BY al.Title; -- Non EQUI JOIN (재생시간 비교) SELECT t1.Name AS LongTrack, t1.Milliseconds AS LongMs, t2.Name AS ShortTrack, t2.Milliseconds AS ShortMs FROM tracks t1, tracks t2 WHERE t1.AlbumId = t2.AlbumId AND t1.Milliseconds &gt;= 300000 AND t2.Milliseconds &lt; t1.Milliseconds; 2) INNER JOIN (ON / USING / NATURAL) ON: 컬럼명이 달라도 사용 가능, 가장 일반적인 형태. USING: 동일한 이름의 컬럼에 사용. 별칭(alias) 사용 불가. NATURAL: 이름이 같은 모든 컬럼을 자동으로 등가 조인 조건으로 사용. 별칭 및 추가 조건(ON/USING/WHERE) 불가. -- ON 절 SELECT t.Name AS TrackName, g.Name AS GenreName FROM tracks t INNER JOIN genres g ON t.GenreId = g.GenreId; -- USING 절 (별칭 금지) SELECT albums.Title AS AlbumTitle, artists.Name AS ArtistName FROM albums INNER JOIN artists USING (ArtistId); -- NATURAL JOIN (공통 컬럼 자동 매칭, 별칭 금지) SELECT albums.Title AS AlbumTitle, artists.Name AS ArtistName FROM albums NATURAL JOIN artists; 3) CROSS JOIN 조인 조건 없이 두 테이블의 모든 행 조합(카테시안 곱) 생성. 결과 행 수 = 테이블A 행 수 × 테이블B 행 수. SELECT g.Name AS GenreName, m.Name AS MediaTypeName FROM genres g CROSS JOIN media_types m; 4) OUTER JOIN (LEFT / RIGHT / FULL) 종류 설명 SQLite 지원 LEFT OUTER JOIN 왼쪽 테이블 모든 행 보존, 불일치는 NULL 항상 지원 RIGHT OUTER JOIN 오른쪽 테이블 모든 행 보존 SQLite 3.39.0 이상 FULL OUTER JOIN 양쪽 모두 보존 SQLite 3.39.0 이상 버전 확인: SELECT sqlite_version(); 구버전 대안: RIGHT JOIN → 테이블 순서 바꿔 LEFT JOIN / FULL JOIN → LEFT JOIN UNION RIGHT JOIN -- LEFT JOIN: 앨범 없는 아티스트도 포함 SELECT ar.Name AS ArtistName, al.Title AS AlbumTitle FROM artists ar LEFT JOIN albums al ON ar.ArtistId = al.ArtistId; -- &#34;없는 데이터&#34; 찾기: LEFT JOIN &#43; IS NULL SELECT ar.Name AS ArtistName FROM artists ar LEFT JOIN albums al ON ar.ArtistId = al.ArtistId WHERE al.AlbumId IS NULL; -- RIGHT JOIN → LEFT JOIN 변환 (테이블 순서 교체) SELECT g.Name AS GenreName, COUNT(t.TrackId) AS TrackCount FROM genres g LEFT JOIN tracks t ON g.GenreId = t.GenreId GROUP BY g.GenreId, g.Name; -- FULL OUTER JOIN 대체 (구버전): UNION SELECT ar.Name AS ArtistName, al.Title AS AlbumTitle FROM artists ar LEFT JOIN albums al ON ar.ArtistId = al.ArtistId UNION SELECT ar.Name AS ArtistName, al.Title AS AlbumTitle FROM artists ar RIGHT JOIN albums al ON ar.ArtistId = al.ArtistId; ON vs WHERE (OUTER JOIN에서 중요)
+...</p>
+  </div>
+  <footer class="entry-footer">
+
+<span title='2026-06-14 23:30:00 +0900 KST'>June 14, 2026</span></footer>
+  <a class="entry-link" aria-label="post link to 0611 SQL 심화 (집계 함수, 집합 연산자, 계층형)" href="https://hseoooo.github.io/posts/0611_join_subquery_%EC%A0%95%EB%A6%AC/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">0612 SQL 심화 (집계 함수, 집합 연산자, 계층형)
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>그룹 함수 &amp; 윈도우 함수 정리 대상 DB: chinook.db (SQLite)
+1. 윈도우 함수와 그룹 함수의 개념 차이 구분 그룹 함수 (GROUP BY) 윈도우 함수 (OVER) 행의 수 그룹별로 행이 축소(집계) 됨 원본 행 수가 그대로 유지됨 결과 형태 그룹당 1개 행 각 행마다 집계값이 추가됨 용도 전체를 요약/축약 개별 데이터 &#43; 집계 정보를 동시에 비교 예시 “국가별 평균 구매액 한 줄씩” “각 주문 옆에 그 국가의 평균 구매액 표시” 핵심 키워드 GROUP BY, HAVING OVER(), PARTITION BY, ORDER BY 한 줄 요약: 그룹 함수는 “여러 행 → 한 행으로 압축&#34;하지만, 윈도우 함수는 “각 행은 유지한 채 그 행이 속한 그룹의 통계치를 함께 보여준다.”
+...</p>
+  </div>
+  <footer class="entry-footer">
+
+<span title='2026-06-14 23:20:00 +0900 KST'>June 14, 2026</span></footer>
+  <a class="entry-link" aria-label="post link to 0612 SQL 심화 (집계 함수, 집합 연산자, 계층형)" href="https://hseoooo.github.io/posts/0611_%EC%9C%88%EB%8F%84%EC%9A%B0%ED%95%A8%EC%88%98_%EA%B7%B8%EB%A3%B9%ED%95%A8%EC%88%98_%EC%A0%95%EB%A6%AC/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">0610 SQL 다수 테이블 제어 및 서브쿼리
     </h2>
   </header>
@@ -281,21 +313,12 @@ name = &#34;Alice&#34; score = 85 # 기본 변수 삽입 print(f&#34;이름: {na
 <span title='2026-06-04 00:00:00 +0900 KST'>June 4, 2026</span></footer>
   <a class="entry-link" aria-label="post link to 0604 Python 중급 문법 2" href="https://hseoooo.github.io/posts/0604_python_advanced_summary/"></a>
 </article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">My First Post
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>This is my first post. It took almost a week to post this single paragraph on my website, but I feel proud of myself learning completely new concepts without hesitance. Here, I will post my class notes, my projects, and more!
-</p>
-  </div>
-  <footer class="entry-footer">
-
-<span title='2026-06-01 21:33:32 +0900 KST'>June 1, 2026</span></footer>
-  <a class="entry-link" aria-label="post link to My First Post" href="https://hseoooo.github.io/posts/my-first-post/"></a>
-</article>
+<footer class="page-footer">
+  <nav class="pagination">
+    <a class="next" href="https://hseoooo.github.io/posts/page/2/">Next&nbsp;&nbsp;»
+    </a>
+  </nav>
+</footer>
     </main>
     
 <footer class="footer">
